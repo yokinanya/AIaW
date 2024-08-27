@@ -1,0 +1,122 @@
+<template>
+  <div>
+    <q-expansion-item
+      bg-sur-c-low
+      of-hidden
+      rd-md
+      v-if="pluginsStore.ready"
+    >
+      <template #header>
+        <q-item-section avatar>
+          <a-avatar :avatar="pluginData.avatar" />
+        </q-item-section>
+        <q-item-section>
+          <q-item-label>
+            {{ plugin.title }}<code bg-sur-c-high>{{ content.name }}</code>
+          </q-item-label>
+          <q-item-label caption>
+            工具调用
+          </q-item-label>
+        </q-item-section>
+        <q-item-section side>
+          <q-spinner
+            v-if="content.status === 'calling'"
+            size="sm"
+          />
+          <q-icon
+            v-else-if="content.status === 'completed'"
+            name="sym_o_check_circle"
+            text-suc
+          />
+          <q-icon
+            v-else-if="content.status === 'failed'"
+            name="sym_o_error"
+            text-err
+          />
+        </q-item-section>
+      </template>
+      <template #default>
+        <md-preview
+          :model-value="contentMd"
+          preview-theme="vuepress"
+          :theme="$q.dark.isActive ? 'dark' : 'light'"
+          bg-sur-c-low
+        />
+      </template>
+    </q-expansion-item>
+    <div
+      v-if="content.result && api?.showComponents"
+      mt-1
+    >
+      <template
+        v-for="(component, index) in api.showComponents"
+        :key="index"
+      >
+        <md-preview
+          v-if="['markdown', 'textbox'].includes(component)"
+          :model-value="content.result[index].contentText"
+          preview-theme="vuepress"
+          :theme="$q.dark.isActive ? 'dark' : 'light'"
+          bg-sur-c-low
+        />
+        <md-preview
+          v-else-if="['json', 'code'].includes(component)"
+          :model-value="wrapCode(content.result[index].contentText, component === 'json' ? 'json' : '')"
+          preview-theme="vuepress"
+          :theme="$q.dark.isActive ? 'dark' : 'light'"
+          bg-sur-c-low
+        />
+        <div v-else-if="component === 'image'">
+          <message-image :image="content.result[index]" />
+        </div>
+        <div v-else-if="component === 'audio'">
+          <message-audio :audio="content.result[index]" />
+        </div>
+      </template>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { usePluginsStore } from 'src/stores/plugins'
+import { AssistantToolContent } from 'src/utils/types'
+import { computed } from 'vue'
+import AAvatar from './AAvatar.vue'
+import { engine } from 'src/utils/template-engine'
+import { MdPreview } from 'md-editor-v3'
+import { wrapCode } from 'src/utils/functions'
+import MessageImage from './MessageImage.vue'
+import MessageAudio from './MessageAudio.vue'
+
+const props = defineProps<{
+  content: AssistantToolContent
+}>()
+
+const pluginsStore = usePluginsStore()
+const plugin = computed(() => pluginsStore.plugins.find(p => p.id === props.content.pluginId))
+const api = computed(() => plugin.value?.apis.find(a => a.name === props.content.name))
+const pluginData = computed(() => pluginsStore.data[props.content.pluginId])
+
+const contentTemplate =
+`### 调用参数
+
+\`\`\`json
+{{ content.args | json }}
+\`\`\`
+
+{%- if content.result %}
+### 调用结果
+
+\`\`\`json
+{{ content.result | json }}
+\`\`\`
+{%- endif %}
+
+{%- if content.error %}
+### 错误信息
+
+{{ content.error }}
+{%- endif %}
+`
+const contentMd = computed(() => engine.parseAndRenderSync(contentTemplate, { content: props.content }))
+</script>
