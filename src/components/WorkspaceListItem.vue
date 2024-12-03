@@ -4,7 +4,7 @@
     :label="item.name"
     :content-inset-level="0.5"
     item-rd
-    :header-class="{ 'bg-sec-c text-on-sec-c': item.id === selected }"
+    :header-class="{ 'route-active': item.id === selected }"
     @update:model-value="accept === 'folder' && (selected = item.id)"
     :default-opened="children.some(c => c.id === selected)"
   >
@@ -44,6 +44,7 @@
             v-close-popup
             @click="deleteItem(item)"
             min-h-0
+            hover:text-err
           >
             <q-item-section>删除</q-item-section>
           </q-item>
@@ -82,7 +83,7 @@
     v-else-if="accept === 'workspace'"
     clickable
     @click="selected = item.id"
-    :class="{ 'bg-sec-c text-on-sec-c': item.id === selected }"
+    :class="{ 'route-active': item.id === selected }"
     item-rd
   >
     <q-item-section
@@ -126,6 +127,7 @@
           v-close-popup
           @click="deleteItem(item)"
           min-h-0
+          hover:text-err
         >
           <q-item-section>删除</q-item-section>
         </q-item>

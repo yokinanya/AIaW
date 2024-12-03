@@ -40,7 +40,7 @@
         <q-item
           clickable
           to="/assistants"
-          active-class="bg-sec-c text-on-sec-c icon-fill"
+          active-class="route-active"
           item-rd
         >
           <q-item-section avatar>
@@ -53,7 +53,7 @@
         <q-item
           clickable
           to="/plugins"
-          active-class="bg-sec-c text-on-sec-c icon-fill"
+          active-class="route-active"
           item-rd
         >
           <q-item-section avatar>
@@ -66,7 +66,7 @@
         <q-item
           clickable
           to="/settings"
-          active-class="bg-sec-c text-on-sec-c icon-fill"
+          active-class="route-active"
           item-rd
         >
           <q-item-section avatar>
@@ -77,7 +77,30 @@
           </q-item-section>
         </q-item>
         <q-separator spaced />
-        <user-item />
+        <div
+          px-2
+          flex
+          text-on-sur-var
+        >
+          <account-btn
+            flat
+          />
+          <q-space />
+          <q-btn
+            flat
+            dense
+            round
+            icon="sym_o_book_2"
+            title="使用指南"
+          />
+          <q-btn
+            flat
+            dense
+            round
+            icon="sym_o_info"
+            title="关于"
+          />
+        </div>
       </q-list>
     </q-drawer>
     <router-view />
@@ -86,25 +109,30 @@
 
 <script setup>
 import { until } from '@vueuse/core'
-import UserItem from 'src/components/UserItem.vue'
 import WorkspaceNav from 'src/components/WorkspaceNav.vue'
 import { useLocalDataStore } from 'src/stores/local-data'
 import { useUiStateStore } from 'src/stores/ui-state'
+import { useWorkspacesStore } from 'src/stores/workspaces'
 import { useRoute, useRouter } from 'vue-router'
+import AccountBtn from 'src/components/AccountBtn.vue'
 
 defineOptions({
   name: 'MainLayout'
 })
 
 const uiStore = useUiStateStore()
-
-const { data } = useLocalDataStore()
+const workspacesStore = useWorkspacesStore()
+const localDataStore = useLocalDataStore()
 const route = useRoute()
 const router = useRouter()
 
-until(() => data.lastWorkspaceId).toBeTruthy().then(() => {
-  if (route.path === '/' && data.lastWorkspaceId) {
-    router.push(`/workspaces/${data.lastWorkspaceId}`)
+async function openLastWorkspace() {
+  await until(() => localDataStore.ready).toBeTruthy()
+  const wsId = localDataStore.data.lastWorkspaceId
+  const dialogId = workspacesStore.workspaces.find(item => item.id === wsId)?.lastDialogId
+  if (route.path === '/' && wsId) {
+    router.push(dialogId ? `/workspaces/${wsId}/dialogs/${dialogId}` : `/workspaces/${wsId}`)
   }
-})
+}
+openLastWorkspace()
 </script>

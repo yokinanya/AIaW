@@ -11,7 +11,7 @@ export const usePluginsStore = defineStore('plugins', () => {
   const installed = useLiveQuery(() => db.installedPlugins.toArray(), {
     initialValue: [] as InstalledPlugin[]
   })
-  const installedIds = computed(() => installed.value.map(i => i.id))
+  const availableIds = computed(() => installed.value.filter(i => i.available).map(i => i.id))
   const [data, ready] = persistentReactive<PluginsData>('#plugins-data', defaultData)
   const plugins = computed(() => [
     calculatorPlugin,
@@ -62,7 +62,7 @@ export const usePluginsStore = defineStore('plugins', () => {
   }
 
   async function uninstall(id: string) {
-    await db.transaction('rw', db.installedPlugins, db.reactives, async () => {
+    await db.transaction('rw', db.installedPlugins, db.assistants, async () => {
       await db.installedPlugins.update(id, { available: false })
       await db.assistants.filter(a => !!a.plugins[id]).modify({ [`plugins.${id}`]: undefined })
     })
@@ -72,7 +72,7 @@ export const usePluginsStore = defineStore('plugins', () => {
     data,
     ready,
     plugins,
-    installedIds,
+    availableIds,
     installLobePlugin,
     installHuggingPlugin,
     installGradioPlugin,

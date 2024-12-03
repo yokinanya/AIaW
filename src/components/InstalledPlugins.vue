@@ -5,7 +5,7 @@
       :key="plugin.id"
       clickable
       :to="`/plugins/${plugin.id}`"
-      active-class="bg-sec-c text-on-sec-c"
+      active-class="route-active"
       item-rd
     >
       <q-item-section avatar>

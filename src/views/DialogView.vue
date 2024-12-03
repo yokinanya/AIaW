@@ -121,9 +121,9 @@
         >
           <message-item
             v-if="messageMap[i] && i !== '$root'"
-            :model-value="msgRoute[index - 1] + 1"
+            :model-value="dialog.msgRoute[index - 1] + 1"
             :message="messageMap[i]"
-            :child-num="msgTree[chain[index - 1]].length"
+            :child-num="dialog.msgTree[chain[index - 1]].length"
             @update:model-value="switchChain(index - 1, $event - 1)"
             @edit="edit(index)"
             @regenerate="regenerate(index)"
@@ -287,6 +287,7 @@
           clearable
           placeholder="输入聊天内容..."
           @keydown.enter="onEnter"
+          @paste="onTextPaste"
         />
       </div>
     </q-page>
@@ -298,7 +299,7 @@
 import { computed, inject, onUnmounted, provide, reactive, ref, Ref, toRaw, watch } from 'vue'
 import { db } from 'src/utils/db'
 import { useLiveQueryWithDeps } from 'src/composables/live-query'
-import { escapeRegex, genId, isTextFile, mimeTypeMatch } from 'src/utils/functions'
+import { escapeRegex, genId, isTextFile, mimeTypeMatch, wrapCode } from 'src/utils/functions'
 import { useAssistantsStore } from 'src/stores/assistants'
 import { streamText, CoreMessage, generateText, tool, jsonSchema } from 'ai'
 import { useModel } from 'src/composables/model'
@@ -310,7 +311,7 @@ import sessions from 'src/utils/sessions'
 import PromptVarInput from 'src/components/PromptVarInput.vue'
 import { MessageContent, PluginApi, ApiCallError, Plugin, Dialog, Message, Workspace, UserMessageContent, StoredItem, ModelSettings } from 'src/utils/types'
 import { usePluginsStore } from 'src/stores/plugins'
-import { add, UpdateSpec } from 'dexie'
+import { UpdateSpec } from 'dexie'
 import MessageItem from 'src/components/MessageItem.vue'
 import { scaleBlob } from 'src/utils/image-process'
 import MessageImage from 'src/components/MessageImage.vue'
@@ -328,6 +329,7 @@ import { useLocalDataStore } from 'src/stores/local-data'
 import ErrorNotFound from 'src/pages/ErrorNotFound.vue'
 import { useRoute, useRouter } from 'vue-router'
 import AbortableBtn from 'src/components/AbortableBtn.vue'
+import { MaxMessageFileSizeMB } from 'src/utils/config'
 
 const props = defineProps<{
   id: string
@@ -336,10 +338,13 @@ const props = defineProps<{
 const rightDrawerAbove = inject('rightDrawerAbove')
 
 const dialogs: Ref<Dialog[]> = inject('dialogs')
-const liveData = useLiveQueryWithDeps(() => props.id, async () => ({
-  dialog: await db.dialogs.get(props.id),
-  messages: await db.messages.where('dialogId').equals(props.id).toArray()
-}), { initialValue: { dialog: null, messages: [] } as { dialog: Dialog, messages: Message[] } })
+const liveData = useLiveQueryWithDeps(() => props.id, async () => {
+  const [dialog, messages] = await Promise.all([
+    db.dialogs.get(props.id),
+    db.messages.where('dialogId').equals(props.id).toArray()
+  ])
+  return { dialog, messages }
+}, { initialValue: { dialog: null, messages: [] } as { dialog: Dialog, messages: Message[] } })
 const dialog = syncRef<Dialog>(
   () => liveData.value.dialog,
   val => { db.dialogs.put(toRaw(val)) },
@@ -354,17 +359,18 @@ const assistant = computed(() => assistantsStore.assistants.find(a => a.id === d
 provide('dialog', dialog)
 
 const chain = computed(() => liveData.value.dialog ? getChain('$root', liveData.value.dialog.msgRoute)[0] : [])
+const historyChain = ref<string[]>([])
 function switchChain(index, value) {
-  const route = [...msgRoute.value.slice(0, index), value]
-  updateRoute(route)
+  const route = [...dialog.value.msgRoute.slice(0, index), value]
+  updateChain(route)
 }
-function updateRoute(baseRoute: number[]) {
-  db.dialogs.update(props.id, {
-    msgRoute: getChain('$root', baseRoute)[1]
-  })
+function updateChain(route) {
+  const res = getChain('$root', route)
+  historyChain.value = res[0]
+  dialog.value.msgRoute = res[1]
 }
 watch([() => liveData.value.messages.length, () => liveData.value.dialog?.id], () => {
-  liveData.value.dialog && updateRoute(liveData.value.dialog.msgRoute)
+  liveData.value.dialog && updateChain(liveData.value.dialog.msgRoute)
 })
 function getChain(node, route: number[]) {
   const children = liveData.value.dialog.msgTree[node]
@@ -380,7 +386,7 @@ function getChain(node, route: number[]) {
 async function edit(index) {
   const target = chain.value[index - 1]
   const { type, contents } = messageMap.value[chain.value[index]]
-  switchChain(index - 1, msgTree.value[target].length)
+  switchChain(index - 1, dialog.value.msgTree[target].length)
   await appendMessage(target, {
     type,
     contents,
@@ -389,7 +395,7 @@ async function edit(index) {
 }
 async function regenerate(index) {
   const target = chain.value[index - 1]
-  switchChain(index - 1, msgTree.value[target].length)
+  switchChain(index - 1, dialog.value.msgTree[target].length)
   await stream(target, false)
 }
 
@@ -417,7 +423,7 @@ async function appendMessage(target, info: Partial<Message>, insert = false) {
 
 async function updateInputText(text) {
   await db.messages.update(chain.value.at(-1), {
-    // use shallow keyPath to avoid dexie's bug
+    // use shallow keyPath to avoid dexie's sync bug
     contents: [{
       ...inputMessageContent.value,
       text
@@ -426,15 +432,30 @@ async function updateInputText(text) {
 }
 
 const inputMessageContent = computed(() => messageMap.value[chain.value.at(-1)]?.contents[0] as UserMessageContent)
-const messageMap = computed(() => {
+const messageMap = computed<Record<string, Message>>(() => {
   const map = {}
   liveData.value.messages.forEach(m => { map[m.id] = m })
   return map
 })
-const msgRoute = computed(() => liveData.value.dialog?.msgRoute)
-const msgTree = computed(() => liveData.value.dialog?.msgTree)
 provide('messageMap', messageMap)
 const inputEmpty = computed(() => !inputMessageContent.value?.text && !inputMessageContent.value?.items.length)
+
+function onTextPaste(ev: ClipboardEvent) {
+  if (!perfs.codePasteOptimize) return
+  const { clipboardData } = ev
+  const i = clipboardData.types.findIndex(t => t === 'vscode-editor-data')
+  if (i !== -1) {
+    const code = clipboardData.getData('text/plain')
+      .replace(/\r\n/g, '\n')
+      .replace(/\r/g, '\n')
+    if (!/\s/.test(code)) return
+    ev.preventDefault()
+    const data = clipboardData.getData('vscode-editor-data')
+    const lang = JSON.parse(data).mode ?? ''
+    const wrappedCode = wrapCode(code, lang)
+    document.execCommand('insertText', false, wrappedCode)
+  }
+}
 
 const imageInput = ref()
 const fileInput = ref()
@@ -443,7 +464,8 @@ function onInputFiles({ target }) {
   parseFiles(files)
   target.value = ''
 }
-function onPaste({ clipboardData }) {
+function onPaste(ev: ClipboardEvent) {
+  const { clipboardData } = ev
   parseFiles(Array.from(clipboardData.files) as File[])
 }
 addEventListener('paste', onPaste)
@@ -476,6 +498,10 @@ async function parseFiles(files: File[]) {
     })
   }
   for (const file of supportedFiles) {
+    if (file.size > MaxMessageFileSizeMB * 1024 * 1024) {
+      $q.notify({ message: `文件太大（>${MaxMessageFileSizeMB}MB）`, color: 'negative' })
+      continue
+    }
     const f = file.type.startsWith('image/') && file.size > 512 * 1024 ? await scaleBlob(file, 2048 * 2048) : file
     parsedFiles.push({
       id: genId(),
@@ -496,13 +522,13 @@ async function parseFiles(files: File[]) {
 }
 async function addItems(items: StoredItem[]) {
   await db.messages.update(chain.value.at(-1), {
-    'contents.0.items': add(items)
+    'contents.0.items': [...inputMessageContent.value.items, ...items]
   })
 }
 
 function getChainMessages() {
   const val: CoreMessage[] = []
-  chain.value
+  historyChain.value
     .slice(1)
     .filter(id => messageMap.value[id].status !== 'inputing')
     .map(id => messageMap.value[id].contents)
@@ -542,6 +568,7 @@ function getChainMessages() {
           ]
         })
       } else if (content.type === 'assistant-tool') {
+        if (content.status !== 'completed') return
         const { name, args, result } = content
         const id = genId()
         val.push({
@@ -654,7 +681,6 @@ async function send() {
 
 const abortController = ref<AbortController>()
 async function stream(target, insert = false) {
-  const reqMessages = getChainMessages()
   const settings: Partial<ModelSettings> = {}
   for (const key in assistant.value.modelSettings) {
     const val = assistant.value.modelSettings[key]
@@ -785,7 +811,7 @@ async function stream(target, insert = false) {
     const result = await streamText({
       model: sdkModel.value,
       system: getSystemPrompt(enabledPlugins.filter(p => p.prompt || p.actions.length)),
-      messages: reqMessages,
+      messages: getChainMessages(),
       tools,
       ...settings,
       abortSignal: abortController.value.signal
@@ -856,10 +882,17 @@ async function stream(target, insert = false) {
       update()
     }
     const usage = await result.usage
-    const warnings = result.warnings?.map(w => (w.type === 'unsupported-setting' || w.type === 'unsupported-tool') ? w.details : w.message)
+    const warnings = (await result.warnings).map(w => (w.type === 'unsupported-setting' || w.type === 'unsupported-tool') ? w.details : w.message)
     await db.messages.update(id, { contents, status: 'default', generatingSession: null, warnings, usage })
   } catch (e) {
-    console.error(e)
+    if (e.data?.error?.type === 'budget_exceeded') {
+      $q.notify({
+        message: '模型服务额度不足',
+        color: 'err-c',
+        textColor: 'on-err-c',
+        actions: [{ label: '充值', color: 'on-sur', handler() { router.push('/account') } }]
+      })
+    }
     await db.messages.update(id, { contents, error: e.message, status: 'failed', generatingSession: null })
   }
 }

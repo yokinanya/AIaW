@@ -3,6 +3,7 @@ import { defaultAvatar, genId } from './functions'
 import { Workspace, Folder, Dialog, Message, Assistant, Canvas, StoredReactive, StoredItem, InstalledPlugin } from './types'
 import { AssistantDefaultPrompt, exampleWsIndexContent } from './templates'
 import dexieCloud, { DexieCloudTable } from 'dexie-cloud-addon'
+import { DexieDBURL } from './config'
 
 type Db = Dexie & {
   workspaces: DexieCloudTable<Workspace | Folder, 'id'>
@@ -18,17 +19,16 @@ type Db = Dexie & {
 const db = new Dexie('data', { addons: [dexieCloud] }) as Db
 
 db.cloud.configure({
-  databaseUrl: 'https://aiaw-sync.krytro.com',
+  databaseUrl: DexieDBURL,
   requireAuth: false,
   customLoginGui: true
 })
-
-db.version(1).stores({
-  workspaces: 'id, name, parentId',
-  dialogs: 'id, name, workspaceId',
-  messages: 'id, dialogId, workspaceId, sender',
-  assistants: 'id, name, workspaceId',
-  canvases: 'id, name, workspaceId',
+db.version(2).stores({
+  workspaces: 'id, type, parentId',
+  dialogs: 'id, workspaceId',
+  messages: 'id, type, dialogId, workspaceId',
+  assistants: 'id, workspaceId',
+  canvases: 'id, workspaceId',
   installedPlugins: 'id',
   reactives: 'key',
   avatarImages: 'id'

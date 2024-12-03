@@ -38,5 +38,6 @@ yarn-error.log*
 # Deploy config
 /deploy
 
-# Cloud key
+# Dexie cloud
+/dexie-cloud.json
 /dexie-cloud.key

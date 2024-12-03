@@ -423,6 +423,11 @@ interface StoredReactive {
   value
 }
 
+interface OrderItem {
+  type: 'sync-service' | 'api-budget'
+  amount: number
+}
+
 export {
   ApiCallError,
   HuggingPluginManifestSchema,
@@ -479,5 +484,6 @@ export type {
   InstalledPlugin,
   Model,
   ModelInputTypes,
-  MarketAssistant
+  MarketAssistant,
+  OrderItem
 }

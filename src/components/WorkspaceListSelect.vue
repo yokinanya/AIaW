@@ -2,7 +2,7 @@
   <q-list>
     <q-item
       v-if="accept === 'folder'"
-      :class="{ 'bg-sec-c text-on-sec-c': selected === '$root'}"
+      :class="{ 'route-active': selected === '$root'}"
       clickable
       item-rd
       dense

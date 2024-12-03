@@ -22,7 +22,7 @@
           round
           icon="sym_o_home"
           :to="`/workspaces/${id}`"
-          :class="{'icon-fill': $route.path === `/workspaces/${id}`}"
+          :class="{'route-active': $route.path === `/workspaces/${id}`}"
         />
         <q-btn
           flat
@@ -30,7 +30,7 @@
           round
           icon="sym_o_settings"
           :to="`/workspaces/${id}/settings`"
-          :class="{'icon-fill': $route.path === `/workspaces/${id}/settings`}"
+          :class="{'route-active': $route.path === `/workspaces/${id}/settings`}"
         />
       </div>
       <div>

@@ -17,6 +17,7 @@ interface Perfs {
   autoGenTitle: boolean
   sendKey: 'ctrl+enter' | 'shift+enter' | 'enter'
   messageQuoteBtn: boolean
+  codePasteOptimize: boolean
 }
 
 export const useLocalPerfStore = defineStore('local-perf', () => {
@@ -48,7 +49,8 @@ export const useLocalPerfStore = defineStore('local-perf', () => {
     ],
     autoGenTitle: true,
     sendKey: 'ctrl+enter',
-    messageQuoteBtn: true
+    messageQuoteBtn: true,
+    codePasteOptimize: true
   }
   const [perfs, ready] = persistentReactive('#local-perf', defaultPerfs)
   watchEffect(() => {

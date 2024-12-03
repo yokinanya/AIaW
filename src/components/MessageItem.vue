@@ -101,7 +101,7 @@
         >
           {{ message.error }}
         </div>
-        <div v-if="message.warnings">
+        <div v-if="message.warnings?.length">
           <div
             text-warn
             break-word

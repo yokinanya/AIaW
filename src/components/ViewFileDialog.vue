@@ -13,7 +13,10 @@
           {{ file.name }}
         </div>
       </q-card-section>
-      <q-card-section p-0>
+      <q-card-section
+        p-0
+        bg-sur-c-low
+      >
         <div v-if="file.contentText">
           <md-preview
             :model-value="markdown"

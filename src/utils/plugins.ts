@@ -6,6 +6,7 @@ import { Client } from '@gradio/client'
 import { AudioEncoderSupported, extractAudioBlob } from './audio-process'
 import { Parser } from 'expr-eval'
 import { parseDoc } from './doc-parse'
+import { corsFetch } from './cors-fetch'
 
 const timePlugin: Plugin = {
   id: 'aiaw-time',
@@ -182,11 +183,12 @@ function buildLobePlugin(manifest: LobeChatPluginManifest, available: boolean): 
       parameters,
       showComponents: manifest.type === 'markdown' ? ['markdown'] : undefined,
       async execute(args, settings) {
-        const res = await fetch(url, {
+        const res = await corsFetch(url, {
           method: 'POST',
           body: JSON.stringify(args),
           headers: createHeadersWithPluginSettings(settings)
         })
+        if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
         return [{
           id: genId(),
           type: 'text',

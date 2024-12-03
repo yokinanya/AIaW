@@ -83,8 +83,8 @@
               unelevated
               bg-pri-c
               text-on-pri-c
-              :label="store.installedIds.includes(item.id) ? '已安装' : '安装'"
-              :disable="store.installedIds.includes(item.id)"
+              :label="store.availableIds.includes(item.id) ? '已安装' : '安装'"
+              :disable="store.availableIds.includes(item.id)"
               @click="install(item.manifest)"
             />
           </q-item-section>
@@ -130,10 +130,11 @@ function load() {
       console.error(err)
       $q.notify({
         message: '加载插件列表失败',
-        color: 'negative',
+        color: 'err-c',
+        textColor: 'on-err-c',
         actions: [{
           label: '重试',
-          color: 'on-err',
+          color: 'on-sur',
           handler: load
         }]
       })

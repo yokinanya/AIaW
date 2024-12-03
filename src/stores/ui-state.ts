@@ -6,5 +6,6 @@ export const useUiStateStore = defineStore('ui-state', () => {
   function toggleMainDrawer() {
     mainDrawerOpen.value = !mainDrawerOpen.value
   }
-  return { mainDrawerOpen, toggleMainDrawer }
+  const colors = ref({})
+  return { mainDrawerOpen, toggleMainDrawer, colors }
 })

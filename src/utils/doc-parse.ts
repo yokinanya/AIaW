@@ -1,3 +1,5 @@
+import { DocParseBaseURL } from './config'
+
 interface ParsedDoc {
   meta: Record<string, any>
   text: string
@@ -8,8 +10,6 @@ interface ParseResult {
   content?: ParsedDoc[]
 }
 
-const baseURL = 'https://aiaw.app/doc-parse'
-
 async function parseDoc(file: Blob, { language, targetPages }) {
   try {
     const formData = new FormData()
@@ -17,7 +17,7 @@ async function parseDoc(file: Blob, { language, targetPages }) {
     language && formData.append('language', language)
     targetPages && formData.append('target_pages', targetPages)
 
-    const response = await fetch(`${baseURL}/parse`, {
+    const response = await fetch(`${DocParseBaseURL}/parse`, {
       method: 'POST',
       body: formData
     })

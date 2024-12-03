@@ -108,10 +108,11 @@ function load() {
       console.error(err)
       $q.notify({
         message: '加载助手列表失败',
-        color: 'negative',
+        color: 'err-c',
+        textColor: 'on-err-c',
         actions: [{
           label: '重试',
-          color: 'on-err',
+          color: 'on-sur',
           handler: load
         }]
       })

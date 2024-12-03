@@ -9,6 +9,7 @@ const textColors = {
   err: 'var(--a-err)',
   suc: 'var(--a-suc)',
   warn: 'var(--a-warn)',
+  'pri-dim': 'var(--a-pri-dim)',
   'on-pri': 'var(--a-on-pri)',
   'on-sec': 'var(--a-on-sec)',
   'on-ter': 'var(--a-on-ter)',
@@ -91,7 +92,9 @@ export default defineConfig({
       /^bg-gradient-(top|bottom|left|right)-a$/,
       ([, pos]) => `light:bg-gradient-${pos}-w dark:bg-gradient-${pos}-b`
     ],
-    ['item-rd', 'rd mx-2 my-1 of-hidden']
+    ['item-rd', 'rd mx-2 my-1 of-hidden'],
+    ['pri-link', 'text-pri decoration-none transition-color duration-300 hover:text-pri-dim'],
+    ['route-active', 'bg-sec-c text-on-sec-c icon-fill']
   ],
   safelist: [
     ...Object.keys(textColors).map(x => `text-${x}`),

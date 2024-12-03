@@ -58,6 +58,7 @@
           preview-theme="vuepress"
           :theme="$q.dark.isActive ? 'dark' : 'light'"
           bg-sur-c-low
+          rd-md
         />
         <md-preview
           v-else-if="['json', 'code'].includes(component)"
@@ -65,6 +66,7 @@
           preview-theme="vuepress"
           :theme="$q.dark.isActive ? 'dark' : 'light'"
           bg-sur-c-low
+          rd-md
         />
         <div v-else-if="component === 'image'">
           <message-image :image="content.result[index]" />

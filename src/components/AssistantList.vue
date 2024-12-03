@@ -5,7 +5,7 @@
       :key="assistant.id"
       clickable
       :to="getLink(assistant.id)"
-      active-class="bg-sec-c text-on-sec-c"
+      active-class="route-active"
       item-rd
     >
       <q-item-section avatar>
@@ -43,6 +43,7 @@
             v-close-popup
             @click="deleteItem(assistant.id)"
             min-h-0
+            hover:text-err
           >
             <q-item-section>删除</q-item-section>
           </q-item>
@@ -111,7 +112,12 @@ function deleteItem(id) {
   $q.dialog({
     title: '删除助手',
     message: '确定要删除助手吗？',
-    cancel: true
+    cancel: true,
+    ok: {
+      label: '删除',
+      color: 'err',
+      flat: true
+    }
   }).onOk(() => {
     assistantsStore.delete(id)
   })

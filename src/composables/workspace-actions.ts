@@ -76,8 +76,13 @@ export function useWorkspaceActions() {
   function deleteItem({ id, type }) {
     $q.dialog({
       title: type === 'workspace' ? '删除工作区' : '删除文件夹',
-      message: type === 'workspace' ? '确定要删除工作区吗？其内部的所有对话和助手将被删除' : '确定要删除文件夹吗？其内部的所有工作区都将被删除',
+      message: type === 'workspace' ? '确定要删除工作区吗？其内部的所有对话和助手都将被删除' : '确定要删除文件夹吗？其内部的所有工作区都将被删除',
       cancel: true,
+      ok: {
+        label: '删除',
+        color: 'err',
+        flat: true
+      },
       ...dialogOptions
     }).onOk(() => { workspacesStore.deleteItem(id) })
   }

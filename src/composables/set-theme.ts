@@ -1,9 +1,11 @@
 import { Hct, hexFromArgb, themeFromSourceColor, TonalPalette } from '@material/material-color-utilities'
 import { Dark } from 'quasar'
 import { useLocalPerfStore } from 'src/stores/local-perf'
+import { useUiStateStore } from 'src/stores/ui-state'
 import { watchEffect } from 'vue'
 
 export function useSetTheme() {
+  const uiStateStore = useUiStateStore()
   watchEffect(() => {
     const { perfs } = useLocalPerfStore()
     const theme = themeFromSourceColor(Hct.from(perfs.themeHue, 48, 40).toInt())
@@ -17,6 +19,7 @@ export function useSetTheme() {
       err: error.tone(80),
       suc: success.tone(80),
       warn: warning.tone(80),
+      'pri-dim': primary.tone(60),
       'on-pri': primary.tone(20),
       'on-sec': secondary.tone(20),
       'on-ter': tertiary.tone(20),
@@ -52,6 +55,7 @@ export function useSetTheme() {
       err: error.tone(40),
       suc: success.tone(40),
       warn: warning.tone(40),
+      'pri-dim': primary.tone(60),
       'on-pri': primary.tone(100),
       'on-sec': secondary.tone(100),
       'on-ter': tertiary.tone(100),
@@ -85,5 +89,6 @@ export function useSetTheme() {
       document.documentElement.style.setProperty(`--a-${key}`, hexFromArgb(colors[key]))
     })
     document.querySelector('meta[name="theme-color"]').setAttribute('content', hexFromArgb(colors['sur-c']))
+    uiStateStore.colors = colors
   })
 }

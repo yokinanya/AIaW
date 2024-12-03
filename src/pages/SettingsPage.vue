@@ -17,7 +17,11 @@
     </q-toolbar>
   </q-header>
   <q-page-container>
-    <q-page pb-2>
+    <q-page
+      pb-2
+      max-w="1000px"
+      mx-a
+    >
       <q-list>
         <q-item-label header>
           默认服务商
@@ -36,7 +40,7 @@
         <q-item>
           <q-item-section>API Key</q-item-section>
           <q-item-section side>
-            <q-input
+            <lazy-input
               class="min-w-250px"
               filled
               dense
@@ -49,7 +53,7 @@
         <q-item>
           <q-item-section>API 代理地址</q-item-section>
           <q-item-section side>
-            <q-input
+            <lazy-input
               class="min-w-250px"
               filled
               dense
@@ -74,6 +78,19 @@
             />
           </q-item-section>
         </q-item>
+        <q-item-label
+          caption
+          p="x-4 y-2"
+          text-on-sur-var
+          v-if="!perfs.provider.apiKey && user.isLoggedIn"
+        >
+          当前自定义 API Key 为空，将使用我们提供的模型服务。详见<router-link
+            pri-link
+            to="/account"
+          >
+            账号
+          </router-link>页面
+        </q-item-label>
         <q-separator spaced />
         <q-item-label header>
           默认模型
@@ -98,7 +115,7 @@
         <q-item>
           <q-item-section>API Key</q-item-section>
           <q-item-section side>
-            <q-input
+            <lazy-input
               class="w-250px"
               filled
               dense
@@ -111,7 +128,7 @@
         <q-item>
           <q-item-section>API 代理地址</q-item-section>
           <q-item-section side>
-            <q-input
+            <lazy-input
               class="w-250px"
               filled
               dense
@@ -168,6 +185,19 @@
           </q-item-section>
           <q-item-section side>
             <q-toggle v-model="perfs.messageQuoteBtn" />
+          </q-item-section>
+        </q-item>
+        <q-item>
+          <q-item-section>
+            <q-item-label>
+              代码粘贴优化
+            </q-item-label>
+            <q-item-label caption>
+              粘贴从 VSCode 复制的代码时，自动用 markdown 代码块包裹
+            </q-item-label>
+          </q-item-section>
+          <q-item-section side>
+            <q-toggle v-model="perfs.codePasteOptimize" />
           </q-item-section>
         </q-item>
         <q-separator spaced />
@@ -297,6 +327,9 @@ import PickAvatarDialog from 'src/components/PickAvatarDialog.vue'
 import { useFilterOptions } from 'src/composables/filter-options'
 import ModelItem from 'src/components/ModelItem.vue'
 import ModelInputItem from 'src/components/ModelInputItem.vue'
+import LazyInput from 'src/components/LazyInput.vue'
+import { useObservable } from '@vueuse/rxjs'
+import { db } from 'src/utils/db'
 
 const uiStateStore = useUiStateStore()
 const { perfs, restore } = useLocalPerfStore()
@@ -330,6 +363,6 @@ const providerLink = computed(() => {
   const provider = encodeURIComponent(JSON.stringify(perfs.provider))
   return `${location.origin}/set-provider?provider=${provider}`
 })
-
+const user = useObservable(db.cloud.currentUser)
 const { filteredOptions, filterFn } = useFilterOptions(modelOptions)
 </script>

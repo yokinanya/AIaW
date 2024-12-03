@@ -69,6 +69,7 @@
             v-close-popup
             @click="deleteItem(dialog.id)"
             min-h-0
+            hover:text-err
           >
             <q-item-section>删除</q-item-section>
           </q-item>
@@ -158,6 +159,11 @@ function deleteItem(id) {
     title: '删除对话',
     message: '确定要删除对话吗？',
     cancel: true,
+    ok: {
+      label: '删除',
+      color: 'err',
+      flat: true
+    },
     ...dialogOptions
   }).onOk(() => {
     db.transaction('rw', db.dialogs, db.messages, async () => {

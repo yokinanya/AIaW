@@ -164,8 +164,7 @@
         >
           提示：插件的全局设置在<router-link
             :to="`/plugins/${plugin.id}`"
-            text-pri
-            decoration-none
+            pri-link
           >
             插件设置
           </router-link>页面
