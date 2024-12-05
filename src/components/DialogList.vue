@@ -82,12 +82,12 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
 import { db } from 'src/utils/db'
-import { genId, caselessIncludes } from 'src/utils/functions'
+import { caselessIncludes } from 'src/utils/functions'
 import { Dialog, Workspace } from 'src/utils/types'
 import { dialogOptions } from 'src/utils/values'
 import { computed, inject, ref, Ref } from 'vue'
-import { useRouter } from 'vue-router'
 import SelectWorkspaceDialog from './SelectWorkspaceDialog.vue'
+import { useCreateDialog } from 'src/composables/create-dialog'
 
 const workspace: Ref<Workspace> = inject('workspace')
 const dialogs: Ref<Dialog[]> = inject('dialogs')
@@ -98,35 +98,9 @@ const filteredDialogs = computed(() => {
 
 const $q = useQuasar()
 
-const router = useRouter()
+const { createDialog } = useCreateDialog(workspace)
 async function addItem() {
-  const id = genId()
-  const messageId = genId()
-  await db.transaction('rw', db.dialogs, db.messages, async () => {
-    await db.dialogs.add({
-      id,
-      workspaceId: workspace.value.id,
-      name: '新对话',
-      msgTree: { $root: [messageId], [messageId]: [] },
-      msgRoute: [],
-      assistantId: workspace.value.defaultAssistantId,
-      inputVars: {}
-    })
-    await db.messages.add({
-      id: messageId,
-      dialogId: id,
-      workspaceId: workspace.value.id,
-      type: 'user',
-      contents: [{
-        type: 'user-message',
-        text: '',
-        items: []
-      }],
-      status: 'inputing'
-    })
-  })
-
-  router.push(`/workspaces/${workspace.value.id}/dialogs/${id}`)
+  await createDialog()
 }
 
 function renameItem(id, oldName) {
@@ -166,9 +140,10 @@ function deleteItem(id) {
     },
     ...dialogOptions
   }).onOk(() => {
-    db.transaction('rw', db.dialogs, db.messages, async () => {
+    db.transaction('rw', db.dialogs, db.messages, db.items, async () => {
       await db.dialogs.delete(id)
       await db.messages.where('dialogId').equals(id).delete()
+      await db.items.where('dialogId').equals(id).delete()
     })
   })
 }

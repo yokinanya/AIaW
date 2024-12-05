@@ -63,19 +63,28 @@ interface IconAvatar {
 }
 type Avatar = SvgAvatar | TextAvatar | ImageAvatar | UrlAvatar | IconAvatar
 
+interface AvatarImage {
+  id: string
+  contentBuffer: ArrayBuffer
+  mimeType: string
+}
 interface StoredItem {
   id: string
   type: 'text' | 'file' | 'quote'
+  dialogId: string
+  references: number
   contentText?: string
   contentBuffer?: ArrayBuffer
   name?: string
   mimeType?: string
 }
+type StoredItemId = StoredItem['id']
+type ApiResultItem = Omit<StoredItem, 'dialogId' | 'id' | 'references'>
 
 interface UserMessageContent {
   type: 'user-message'
   text: string
-  items: StoredItem[]
+  items: StoredItemId[]
 }
 
 interface AssistantMessageContent {
@@ -88,7 +97,7 @@ interface AssistantToolContent {
   pluginId: string
   name: string
   args
-  result?: StoredItem[]
+  result?: StoredItemId[]
   status: 'calling' | 'failed' | 'completed'
   error?: string
 }
@@ -99,7 +108,7 @@ interface AssistantActionContent {
   name: string
   args
   text?: string
-  result?: StoredItem[]
+  result?: StoredItemId[]
   status: 'streaming' | 'aborted' | 'ready' | 'calling' | 'failed' | 'completed',
   error?: string
 }
@@ -149,7 +158,7 @@ interface PluginApi {
   prompt?: string
   parameters: PluginSchema
   showComponents?: string[]
-  execute(args, settings): Promise<StoredItem[]>
+  execute(args, settings): Promise<ApiResultItem[]>
 }
 
 interface PluginFileparser {
@@ -160,7 +169,7 @@ interface PluginFileparser {
     hint?: string
     mask?: string
   }
-  execute(args: { file: Blob, range?: string }, settings): Promise<StoredItem[]>
+  execute(args: { file: Blob, range?: string }, settings): Promise<ApiResultItem[]>
 }
 
 interface Plugin {
@@ -368,7 +377,6 @@ interface Message {
   type: 'user' | 'assistant'
   assistantId?: string
   dialogId: string
-  workspaceId: string
   contents: MessageContent[]
   status: 'pending' | 'streaming' | 'failed' | 'default' | 'inputing'
   generatingSession?: string
@@ -462,6 +470,9 @@ export type {
   Canvas,
   StoredReactive,
   StoredItem,
+  StoredItemId,
+  ApiResultItem,
+  AvatarImage,
   Avatar,
   SvgAvatar,
   TextAvatar,

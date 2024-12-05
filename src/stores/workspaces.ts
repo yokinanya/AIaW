@@ -44,12 +44,15 @@ export const useWorkspacesStore = defineStore('workspaces', () => {
     for (const key of keys) {
       await deleteItem(key)
     }
-    await db.transaction('rw', [db.workspaces, db.dialogs, db.messages, db.assistants, db.canvases], async () => {
-      await db.workspaces.delete(id)
+    await db.transaction('rw', [db.workspaces, db.dialogs, db.messages, db.items, db.assistants, db.canvases], async () => {
+      await db.dialogs.where('workspaceId').equals(id).eachKey(dialogId => {
+        db.messages.where('dialogId').equals(dialogId).delete()
+        db.items.where('dialogId').equals(dialogId).delete()
+      })
       await db.dialogs.where('workspaceId').equals(id).delete()
-      await db.messages.where('workspaceId').equals(id).delete()
       await db.assistants.where('workspaceId').equals(id).delete()
       await db.canvases.where('workspaceId').equals(id).delete()
+      await db.workspaces.delete(id)
     })
     return true
   }

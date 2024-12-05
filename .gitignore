@@ -41,3 +41,7 @@ yarn-error.log*
 # Dexie cloud
 /dexie-cloud.json
 /dexie-cloud.key
+
+# Vitepress
+/docs/.vitepress/cache
+/docs/.vitepress/dist

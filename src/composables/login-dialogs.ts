@@ -6,7 +6,9 @@ import { dialogOptions } from 'src/utils/values'
 
 export function useLoginDialogs() {
   const userInteraction = useObservable(db.cloud.userInteraction)
+  const user = useObservable(db.cloud.currentUser)
   const $q = useQuasar()
+  let loginNotify = false
 
   watch(userInteraction, interaction => {
     if (!interaction) return
@@ -38,6 +40,7 @@ export function useLoginDialogs() {
         ...dialogOptions
       }).onOk(otp => {
         interaction.onSubmit({ otp })
+        loginNotify = true
       }).onCancel(() => {
         interaction.onCancel()
       })
@@ -61,5 +64,9 @@ export function useLoginDialogs() {
         })
       }
     }
+  })
+  watch(() => user.value.isLoggedIn, isLoggedIn => {
+    isLoggedIn && loginNotify && $q.notify(`已登录：${user.value.email}`)
+    loginNotify = false
   })
 }

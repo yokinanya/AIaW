@@ -86,20 +86,44 @@
             flat
           />
           <q-space />
+          <dark-switch-btn />
           <q-btn
             flat
             dense
             round
-            icon="sym_o_book_2"
-            title="使用指南"
-          />
-          <q-btn
-            flat
-            dense
-            round
-            icon="sym_o_info"
-            title="关于"
-          />
+            icon="sym_o_more_vert"
+          >
+            <q-menu>
+              <q-list>
+                <q-item
+                  clickable
+                  v-close-popup
+                  min-h-0
+                >
+                  <q-item-section
+                    avatar
+                    min-w-0
+                  >
+                    <q-icon name="sym_o_book_2" />
+                  </q-item-section>
+                  <q-item-section>使用指南</q-item-section>
+                </q-item>
+                <q-item
+                  clickable
+                  v-close-popup
+                  min-h-0
+                >
+                  <q-item-section
+                    avatar
+                    min-w-0
+                  >
+                    <q-icon name="sym_o_info" />
+                  </q-item-section>
+                  <q-item-section>关于</q-item-section>
+                </q-item>
+              </q-list>
+            </q-menu>
+          </q-btn>
         </div>
       </q-list>
     </q-drawer>
@@ -115,6 +139,7 @@ import { useUiStateStore } from 'src/stores/ui-state'
 import { useWorkspacesStore } from 'src/stores/workspaces'
 import { useRoute, useRouter } from 'vue-router'
 import AccountBtn from 'src/components/AccountBtn.vue'
+import DarkSwitchBtn from 'src/components/DarkSwitchBtn.vue'
 
 defineOptions({
   name: 'MainLayout'

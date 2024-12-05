@@ -71,13 +71,13 @@
             gap-2
           >
             <message-image
-              v-for="image in content.items.filter(i => i.mimeType?.startsWith('image/'))"
+              v-for="image in content.items.map(id => itemMap[id]).filter(i => i.mimeType?.startsWith('image/'))"
               :key="image.id"
               :image
               h="100px"
             />
             <message-file
-              v-for="file in content.items.filter(i => !i.mimeType?.startsWith('image/'))"
+              v-for="file in content.items.map(id => itemMap[id]).filter(i => !i.mimeType?.startsWith('image/'))"
               :key="file.id"
               :file
             />
@@ -87,7 +87,7 @@
             :content
             my-2
           />
-          <ActionContent
+          <action-content
             v-if="content.type === 'assistant-action'"
             :content
             @update="updateContent(index, $event)"
@@ -179,7 +179,7 @@
 import { MdPreview } from 'md-editor-v3'
 import { db } from 'src/utils/db'
 import 'md-editor-v3/lib/preview.css'
-import { computed, onUnmounted, reactive, ref, watchEffect } from 'vue'
+import { computed, ComputedRef, inject, onUnmounted, reactive, ref, watchEffect } from 'vue'
 import sessions from 'src/utils/sessions'
 import { MessageContent, Message } from 'src/utils/types'
 import CopyBtn from './CopyBtn.vue'
@@ -318,6 +318,8 @@ function quote() {
   })
   showQuoteBtn.value = false
 }
+
+const itemMap = inject<ComputedRef>('itemMap')
 </script>
 
 <style lang="scss">

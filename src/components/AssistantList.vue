@@ -25,6 +25,15 @@
             clickable
             v-close-popup
             v-if="workspaceId !== '$root'"
+            @click="createDialog({ assistantId: assistant.id })"
+            min-h-0
+          >
+            <q-item-section>新建对话</q-item-section>
+          </q-item>
+          <q-item
+            clickable
+            v-close-popup
+            v-if="workspaceId !== '$root'"
             @click="move(assistant.id, '$root')"
             min-h-0
           >
@@ -71,11 +80,12 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
-import { computed } from 'vue'
+import { computed, inject, ref } from 'vue'
 import { useAssistantsStore } from 'src/stores/assistants'
 import { useRouter } from 'vue-router'
 import AAvatar from './AAvatar.vue'
 import SelectWorkspaceDialog from './SelectWorkspaceDialog.vue'
+import { useCreateDialog } from 'src/composables/create-dialog'
 
 const props = defineProps<{
   workspaceId: string
@@ -122,4 +132,6 @@ function deleteItem(id) {
     assistantsStore.delete(id)
   })
 }
+
+const { createDialog } = useCreateDialog(inject('workspace', ref()))
 </script>

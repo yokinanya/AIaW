@@ -1,5 +1,5 @@
 import { GradioFixedInput, GradioManifestEndpoint, GradioPluginManifest, GradioApiInput, HuggingPluginManifest, Plugin, PluginApi, PluginData, PluginsData } from './types'
-import { defaultAvatar, genId, parsePageRange, parseSeconds } from './functions'
+import { defaultAvatar, parsePageRange, parseSeconds } from './functions'
 import { createHeadersWithPluginSettings, LobeChatPluginManifest } from '@lobehub/chat-plugin-sdk'
 import { Boolean as TBoolean, Number as TNumber, Object as TObject, Optional as TOptional, String as TString } from '@sinclair/typebox'
 import { Client } from '@gradio/client'
@@ -21,7 +21,6 @@ const timePlugin: Plugin = {
       parameters: TObject({}),
       async execute() {
         return [{
-          id: genId(),
           type: 'text',
           contentText: new Date().toString()
         }]
@@ -158,7 +157,6 @@ const calculatorPlugin: Plugin = {
     }),
     async execute({ expression, variables }) {
       return [{
-        id: genId(),
         type: 'text',
         contentText: Parser.evaluate(expression, variables).toString()
       }]
@@ -190,7 +188,6 @@ function buildLobePlugin(manifest: LobeChatPluginManifest, available: boolean): 
         })
         if (!res.ok) throw new Error(`${res.status} ${res.statusText}`)
         return [{
-          id: genId(),
           type: 'text',
           contentText: await res.text()
         }]
@@ -259,7 +256,6 @@ function buildGradioPlugin(manifest: GradioPluginManifest, available: boolean): 
         const resp = await fetch(d.url)
         const blob = await resp.blob()
         return {
-          id: genId(),
           type: 'file' as const,
           mimeType: blob.type,
           contentBuffer: await blob.arrayBuffer(),
@@ -267,7 +263,6 @@ function buildGradioPlugin(manifest: GradioPluginManifest, available: boolean): 
         }
       }
       return {
-        id: genId(),
         type: 'text' as const,
         contentText: d
       }
@@ -639,7 +634,6 @@ const docParsePlugin: Plugin = {
         targetPages: range ? parsePageRange(range).join(',') : undefined
       })
       return [{
-        id: genId(),
         type: 'file',
         contentText: docs.map(r => r.text).join('\n--------page-separator--------\n')
       }]

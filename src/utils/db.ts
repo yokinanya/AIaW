@@ -1,6 +1,6 @@
 import Dexie from 'dexie'
 import { defaultAvatar, genId } from './functions'
-import { Workspace, Folder, Dialog, Message, Assistant, Canvas, StoredReactive, StoredItem, InstalledPlugin } from './types'
+import { Workspace, Folder, Dialog, Message, Assistant, Canvas, StoredReactive, InstalledPlugin, AvatarImage, StoredItem } from './types'
 import { AssistantDefaultPrompt, exampleWsIndexContent } from './templates'
 import dexieCloud, { DexieCloudTable } from 'dexie-cloud-addon'
 import { DexieDBURL } from './config'
@@ -13,7 +13,8 @@ type Db = Dexie & {
   canvases: DexieCloudTable<Canvas, 'id'>
   installedPlugins: DexieCloudTable<InstalledPlugin, 'id'>
   reactives: DexieCloudTable<StoredReactive, 'key'>
-  avatarImages: DexieCloudTable<StoredItem, 'id'>
+  avatarImages: DexieCloudTable<AvatarImage, 'id'>
+  items: DexieCloudTable<StoredItem, 'id'>
 }
 
 const db = new Dexie('data', { addons: [dexieCloud] }) as Db
@@ -21,17 +22,19 @@ const db = new Dexie('data', { addons: [dexieCloud] }) as Db
 db.cloud.configure({
   databaseUrl: DexieDBURL,
   requireAuth: false,
-  customLoginGui: true
+  customLoginGui: true,
+  nameSuffix: false
 })
-db.version(2).stores({
+db.version(3).stores({
   workspaces: 'id, type, parentId',
   dialogs: 'id, workspaceId',
-  messages: 'id, type, dialogId, workspaceId',
+  messages: 'id, type, dialogId',
   assistants: 'id, workspaceId',
   canvases: 'id, workspaceId',
   installedPlugins: 'id',
   reactives: 'key',
-  avatarImages: 'id'
+  avatarImages: 'id',
+  items: 'id, type, dialogId'
 })
 
 const defaultModelSettings = {

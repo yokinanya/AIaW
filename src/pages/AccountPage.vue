@@ -136,7 +136,7 @@
             flat
             card-class="bg-sur"
             hide-bottom
-            :rows="user.data.orderHistory"
+            :rows="[...user.data.orderHistory].reverse()"
             :columns="orderHistoryColumns"
             v-if="user.data.orderHistory?.length"
           />

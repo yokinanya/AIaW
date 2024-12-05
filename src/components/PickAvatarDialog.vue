@@ -245,7 +245,7 @@ function setText(text: string) {
 async function onImageInput(file: File) {
   const blob = await cropSquareBlob(file, 100)
   const id = genId()
-  await db.avatarImages.put({ id, type: 'file', contentBuffer: await blob.arrayBuffer(), mimeType: file.type })
+  await db.avatarImages.add({ id, contentBuffer: await blob.arrayBuffer(), mimeType: file.type })
   selected.value = { type: 'image', imageId: id }
 }
 watch(selected, (to, from) => {

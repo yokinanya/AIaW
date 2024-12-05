@@ -1,13 +1,13 @@
-import { StoredItem } from 'src/utils/types'
+import { AvatarImage, StoredItem } from 'src/utils/types'
 import { onUnmounted, Ref, ref, watch } from 'vue'
 
 const objectURLs: {
   [id: string]: { url: string, active: number }
 } = {}
 
-export function useFileURL(file: Ref<StoredItem>) {
+export function useFileURL(file: Ref<StoredItem | AvatarImage>) {
   const url = ref(null)
-  function mount({ id, contentBuffer, mimeType }: StoredItem) {
+  function mount({ id, contentBuffer, mimeType }: StoredItem | AvatarImage) {
     if (objectURLs[id]) {
       objectURLs[id].active++
       url.value = objectURLs[id].url

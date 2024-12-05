@@ -24,7 +24,7 @@
     >
       <q-list>
         <q-item-label header>
-          默认服务商
+          自定义服务商
         </q-item-label>
         <q-item>
           <q-item-section>服务商</q-item-section>

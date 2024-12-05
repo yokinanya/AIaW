@@ -10,7 +10,10 @@
     "lint": "eslint --ext .js,.ts,.vue ./",
     "test": "echo \"No test specified\" && exit 0",
     "dev": "quasar dev",
-    "build": "quasar build"
+    "build": "quasar build",
+    "docs:dev": "vitepress dev docs",
+    "docs:build": "vitepress build docs",
+    "docs:preview": "vitepress preview docs"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^0.0.51",
@@ -61,6 +64,7 @@
     "typescript": "~5.5.4",
     "unocss": "^0.62.3",
     "vite-plugin-checker": "^0.7.2",
+    "vitepress": "^1.5.0",
     "vue-tsc": "^2.0.29",
     "workbox-build": "^7.1.1",
     "workbox-cacheable-response": "^7.1.0",

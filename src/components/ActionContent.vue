@@ -135,7 +135,7 @@ async function execute() {
   const { result, error } = await callApi(plugin.value, plugin.value.apis.find(a => a.name === name), args)
   emit('update', {
     ...props.content,
-    result,
+    result: result.map(item => item.id),
     error,
     status: error ? 'failed' : 'completed'
   })

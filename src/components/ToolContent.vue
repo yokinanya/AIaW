@@ -54,7 +54,7 @@
       >
         <md-preview
           v-if="['markdown', 'textbox'].includes(component)"
-          :model-value="content.result[index].contentText"
+          :model-value="itemMap[content.result[index]].contentText"
           preview-theme="vuepress"
           :theme="$q.dark.isActive ? 'dark' : 'light'"
           bg-sur-c-low
@@ -62,17 +62,17 @@
         />
         <md-preview
           v-else-if="['json', 'code'].includes(component)"
-          :model-value="wrapCode(content.result[index].contentText, component === 'json' ? 'json' : '')"
+          :model-value="wrapCode(itemMap[content.result[index]].contentText, component === 'json' ? 'json' : '')"
           preview-theme="vuepress"
           :theme="$q.dark.isActive ? 'dark' : 'light'"
           bg-sur-c-low
           rd-md
         />
         <div v-else-if="component === 'image'">
-          <message-image :image="content.result[index]" />
+          <message-image :image="itemMap[content.result[index]]" />
         </div>
         <div v-else-if="component === 'audio'">
-          <message-audio :audio="content.result[index]" />
+          <message-audio :audio="itemMap[content.result[index]]" />
         </div>
       </template>
     </div>
@@ -82,7 +82,7 @@
 <script setup lang="ts">
 import { usePluginsStore } from 'src/stores/plugins'
 import { AssistantToolContent } from 'src/utils/types'
-import { computed } from 'vue'
+import { computed, ComputedRef, inject } from 'vue'
 import AAvatar from './AAvatar.vue'
 import { engine } from 'src/utils/template-engine'
 import { MdPreview } from 'md-editor-v3'
@@ -103,14 +103,14 @@ const contentTemplate =
 `### 调用参数
 
 \`\`\`json
-{{ content.args | json }}
+{{ content.args | json: 2 }}
 \`\`\`
 
-{%- if content.result %}
+{%- if result %}
 ### 调用结果
 
 \`\`\`json
-{{ content.result | json }}
+{{ result | json: 2 }}
 \`\`\`
 {%- endif %}
 
@@ -120,5 +120,16 @@ const contentTemplate =
 {{ content.error }}
 {%- endif %}
 `
-const contentMd = computed(() => engine.parseAndRenderSync(contentTemplate, { content: props.content }))
+const contentMd = computed(() => {
+  const { content } = props
+  return engine.parseAndRenderSync(contentTemplate, {
+    content,
+    result: content.result?.map(id => {
+      const { name, type, mimeType, contentText } = itemMap.value[id]
+      return { name, type, mimeType, contentText }
+    })
+  })
+})
+
+const itemMap = inject<ComputedRef>('itemMap')
 </script>

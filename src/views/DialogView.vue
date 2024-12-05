@@ -127,7 +127,7 @@
             @update:model-value="switchChain(index - 1, $event - 1)"
             @edit="edit(index)"
             @regenerate="regenerate(index)"
-            @quote="addItems([$event])"
+            @quote="addInputItems([$event])"
             mb-4
           />
         </template>
@@ -150,7 +150,7 @@
           gap-2
         >
           <message-image
-            v-for="image in inputMessageContent.items.filter(i => i.mimeType?.startsWith('image/'))"
+            v-for="image in inputContentItems.filter(i => i.mimeType?.startsWith('image/'))"
             :key="image.id"
             :image
             removable
@@ -159,7 +159,7 @@
             shadow
           />
           <message-file
-            v-for="file in inputMessageContent.items.filter(i => !i.mimeType?.startsWith('image/'))"
+            v-for="file in inputContentItems.filter(i => !i.mimeType?.startsWith('image/'))"
             :key="file.id"
             :file
             removable
@@ -339,12 +339,13 @@ const rightDrawerAbove = inject('rightDrawerAbove')
 
 const dialogs: Ref<Dialog[]> = inject('dialogs')
 const liveData = useLiveQueryWithDeps(() => props.id, async () => {
-  const [dialog, messages] = await Promise.all([
+  const [dialog, messages, items] = await Promise.all([
     db.dialogs.get(props.id),
-    db.messages.where('dialogId').equals(props.id).toArray()
+    db.messages.where('dialogId').equals(props.id).toArray(),
+    db.items.where('dialogId').equals(props.id).toArray()
   ])
-  return { dialog, messages }
-}, { initialValue: { dialog: null, messages: [] } as { dialog: Dialog, messages: Message[] } })
+  return { dialog, messages, items }
+}, { initialValue: { dialog: null, messages: [], items: [] } as { dialog: Dialog, messages: Message[], items: StoredItem[] } })
 const dialog = syncRef<Dialog>(
   () => liveData.value.dialog,
   val => { db.dialogs.put(toRaw(val)) },
@@ -367,7 +368,7 @@ function switchChain(index, value) {
 function updateChain(route) {
   const res = getChain('$root', route)
   historyChain.value = res[0]
-  dialog.value.msgRoute = res[1]
+  db.dialogs.update(dialog.value.id, { msgRoute: res[1] })
 }
 watch([() => liveData.value.messages.length, () => liveData.value.dialog?.id], () => {
   liveData.value.dialog && updateChain(liveData.value.dialog.msgRoute)
@@ -387,10 +388,14 @@ async function edit(index) {
   const target = chain.value[index - 1]
   const { type, contents } = messageMap.value[chain.value[index]]
   switchChain(index - 1, dialog.value.msgTree[target].length)
-  await appendMessage(target, {
-    type,
-    contents,
-    status: 'inputing'
+  await db.transaction('rw', db.dialogs, db.messages, db.items, () => {
+    appendMessage(target, {
+      type,
+      contents,
+      status: 'inputing'
+    })
+    const content = contents[0] as UserMessageContent
+    saveItems(content.items.map(id => itemMap.value[id]))
   })
 }
 async function regenerate(index) {
@@ -408,15 +413,18 @@ async function appendMessage(target, info: Partial<Message>, insert = false) {
       workspaceId: dialog.value.workspaceId,
       ...info
     } as Message)
-    const children = (await db.dialogs.get(props.id)).msgTree[target]
+    const d = await db.dialogs.get(props.id)
+    const children = d.msgTree[target]
     const changes = insert ? {
-      [`msgTree.${target}`]: [id],
-      [`msgTree.${id}`]: children
+      [target]: [id],
+      [id]: children
     } : {
-      [`msgTree.${target}`]: [...children, id],
-      [`msgTree.${id}`]: []
+      [target]: [...children, id],
+      [id]: []
     }
-    await db.dialogs.update(props.id, changes as unknown as UpdateSpec<Dialog>)
+    await db.dialogs.update(props.id, {
+      msgTree: { ...d.msgTree, ...changes }
+    })
   })
   return id
 }
@@ -432,12 +440,19 @@ async function updateInputText(text) {
 }
 
 const inputMessageContent = computed(() => messageMap.value[chain.value.at(-1)]?.contents[0] as UserMessageContent)
+const inputContentItems = computed(() => inputMessageContent.value.items.map(id => itemMap.value[id]).filter(x => x))
 const messageMap = computed<Record<string, Message>>(() => {
   const map = {}
   liveData.value.messages.forEach(m => { map[m.id] = m })
   return map
 })
+const itemMap = computed<Record<string, StoredItem>>(() => {
+  const map = {}
+  liveData.value.items.forEach(i => { map[i.id] = i })
+  return map
+})
 provide('messageMap', messageMap)
+provide('itemMap', itemMap)
 const inputEmpty = computed(() => !inputMessageContent.value?.text && !inputMessageContent.value?.items.length)
 
 function onTextPaste(ev: ClipboardEvent) {
@@ -470,11 +485,18 @@ function onPaste(ev: ClipboardEvent) {
 }
 addEventListener('paste', onPaste)
 onUnmounted(() => removeEventListener('paste', onPaste))
-async function removeItem(item) {
+async function removeItem(item: StoredItem) {
   const items = [...inputMessageContent.value.items]
-  items.splice(items.indexOf(item), 1)
-  await db.messages.update(chain.value.at(-1), {
-    'contents.0.items': items
+  items.splice(items.indexOf(item.id), 1)
+  await db.transaction('rw', db.messages, db.items, () => {
+    db.messages.update(chain.value.at(-1), {
+      contents: [{
+        ...inputMessageContent.value,
+        items
+      }]
+    })
+    item.references--
+    item.references === 0 ? db.items.delete(item.id) : db.items.update(item.id, { references: item.references })
   })
 }
 async function parseFiles(files: File[]) {
@@ -493,6 +515,8 @@ async function parseFiles(files: File[]) {
     parsedFiles.push({
       id: genId(),
       type: 'text',
+      dialogId: props.id,
+      references: 0,
       name: file.name,
       contentText: await file.text()
     })
@@ -506,24 +530,41 @@ async function parseFiles(files: File[]) {
     parsedFiles.push({
       id: genId(),
       type: 'file',
+      dialogId: props.id,
+      references: 0,
       name: file.name,
       mimeType: file.type,
       contentBuffer: await f.arrayBuffer()
     })
   }
-  addItems(parsedFiles)
+  addInputItems(parsedFiles)
 
   otherFiles.length && $q.dialog({
     component: ParseFilesDialog,
     componentProps: { files: otherFiles, plugins: assistant.value.plugins }
   }).onOk(files => {
-    addItems(files)
+    addInputItems(files)
   })
 }
-async function addItems(items: StoredItem[]) {
-  await db.messages.update(chain.value.at(-1), {
-    'contents.0.items': [...inputMessageContent.value.items, ...items]
+async function addInputItems(items: StoredItem[]) {
+  const ids = items.map(i => i.id)
+  await db.transaction('rw', db.messages, db.items, () => {
+    db.messages.update(chain.value.at(-1), {
+      // use shallow keyPath to avoid dexie's sync bug
+      contents: [{
+        ...inputMessageContent.value,
+        items: [...inputMessageContent.value.items, ...ids]
+      }]
+    })
+    saveItems(items)
   })
+}
+
+async function saveItems(items: StoredItem[]) {
+  items.forEach(i => {
+    i.references++
+  })
+  await db.items.bulkPut(items)
 }
 
 function getChainMessages() {
@@ -539,7 +580,7 @@ function getChainMessages() {
           role: 'user',
           content: [
             { type: 'text', text: content.text },
-            ...content.items.map(i => {
+            ...content.items.map(id => itemMap.value[id]).map(i => {
               if (i.contentText) {
                 if (i.type === 'file') {
                   return { type: 'text' as const, text: `<file_content filename="${i.name}">\n${i.contentText}\n</file_content>` }
@@ -586,7 +627,7 @@ function getChainMessages() {
             type: 'tool-result',
             toolName: name,
             toolCallId: id,
-            result
+            result: result.map(id => itemMap.value[id])
           }]
         })
       } else if (content.type === 'assistant-action') {
@@ -730,10 +771,10 @@ async function stream(target, insert = false) {
       content.error = error
     } else {
       content.status = 'completed'
-      content.result = result
+      content.result = result.map(i => i.id)
     }
     update()
-    return content
+    return { result, error }
   }
   const { plugins } = assistant.value
   const tools = {}
