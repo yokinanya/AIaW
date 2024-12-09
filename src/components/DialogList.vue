@@ -32,6 +32,7 @@
       :to="`/workspaces/${workspace.id}/dialogs/${dialog.id}`"
       active-class="bg-sec-c text-on-sec-c"
       item-rd
+      min-h="40px"
     >
       <q-item-section>
         {{ dialog.name }}
@@ -40,39 +41,27 @@
         context-menu
       >
         <q-list style="min-width: 100px">
-          <q-item
-            clickable
-            v-close-popup
+          <menu-item
+            icon="sym_o_edit"
+            label="修改标题"
             @click="renameItem(dialog.id, dialog.name)"
-            min-h-0
-          >
-            <q-item-section>修改标题</q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-close-popup
+          />
+          <menu-item
+            icon="sym_o_auto_fix"
+            label="总结标题"
             @click="$router.push(`/workspaces/${workspace.id}/dialogs/${dialog.id}#genTitle`)"
-            min-h-0
-          >
-            <q-item-section>总结标题</q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-close-popup
+          />
+          <menu-item
+            icon="sym_o_move_item"
+            label="移动至"
             @click="moveItem(dialog.id)"
-            min-h-0
-          >
-            <q-item-section>移动至</q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-close-popup
+          />
+          <menu-item
+            icon="sym_o_delete"
+            label="删除"
             @click="deleteItem(dialog.id)"
-            min-h-0
             hover:text-err
-          >
-            <q-item-section>删除</q-item-section>
-          </q-item>
+          />
         </q-list>
       </q-menu>
     </q-item>
@@ -88,6 +77,7 @@ import { dialogOptions } from 'src/utils/values'
 import { computed, inject, ref, Ref } from 'vue'
 import SelectWorkspaceDialog from './SelectWorkspaceDialog.vue'
 import { useCreateDialog } from 'src/composables/create-dialog'
+import MenuItem from './MenuItem.vue'
 
 const workspace: Ref<Workspace> = inject('workspace')
 const dialogs: Ref<Dialog[]> = inject('dialogs')

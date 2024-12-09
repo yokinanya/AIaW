@@ -8,7 +8,9 @@
       :schema="sch as PluginSchema"
       :prefix="key as string"
       :component
+      :lazy
       v-model="model[key] as unknown as Model"
+      :input-props
     />
     <unified-input
       v-else
@@ -17,7 +19,12 @@
       :label="sch.title || key as string"
       :description="sch.description"
       :component
+      :lazy
       v-model="model[key] as any"
+      :input-props="{
+        type: sch.format === 'password' ? 'password' : undefined,
+        ...inputProps
+      }"
     />
   </template>
 </template>
@@ -29,8 +36,9 @@ import UnifiedInput from './UnifiedInput.vue'
 defineProps<{
   schema: PluginSchema
   prefix?: string
-  dense?: boolean
   component: 'input' | 'item'
+  inputProps?: Record<string, any>
+  lazy?: boolean
 }>()
 
 interface Model {

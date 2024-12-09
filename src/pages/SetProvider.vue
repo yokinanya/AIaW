@@ -1,22 +1,25 @@
 <template><div /></template>
 
 <script setup lang="ts">
+import { Validator } from '@cfworker/json-schema'
 import { until } from '@vueuse/core'
 import { useQuasar } from 'quasar'
-import { useLocalPerfStore } from 'src/stores/local-perf'
+import { useUserPerfsStore } from 'src/stores/user-perfs'
+import { ProviderSchema } from 'src/utils/types'
 import { useRoute, useRouter } from 'vue-router'
 
 const router = useRouter()
 const route = useRoute()
-const localPerfStore = useLocalPerfStore()
+const userPerfsStore = useUserPerfsStore()
 const $q = useQuasar()
 
-until(() => localPerfStore.ready).toBeTruthy().then(() => {
+until(() => userPerfsStore.ready).toBeTruthy().then(() => {
   try {
     const provider = JSON.parse(route.query.provider as string)
-    for (const key in provider) {
-      localPerfStore.perfs.provider[key] = provider[key]
+    if (!new Validator(ProviderSchema).validate(provider)) {
+      throw new Error('Invalid provider schema')
     }
+    userPerfsStore.perfs.provider = provider
     $q.notify({
       message: '已设置服务商',
       color: 'positive'
@@ -24,7 +27,7 @@ until(() => localPerfStore.ready).toBeTruthy().then(() => {
   } catch (e) {
     console.error(e)
     $q.notify({
-      message: '设置服务商失败',
+      message: '设置服务商失败：格式错误',
       color: 'negative'
     })
   } finally {

@@ -155,7 +155,7 @@
           flat
           dense
           ml-1
-          title="编辑"
+          title="修改"
           @click="$emit('edit')"
         />
       </div>
@@ -185,7 +185,7 @@ import { MessageContent, Message } from 'src/utils/types'
 import CopyBtn from './CopyBtn.vue'
 import AAvatar from './AAvatar.vue'
 import { useAssistantsStore } from 'src/stores/assistants'
-import { useLocalPerfStore } from 'src/stores/local-perf'
+import { useUserPerfsStore } from 'src/stores/user-perfs'
 import MessageImage from './MessageImage.vue'
 import ToolContent from './ToolContent.vue'
 import ActionContent from './ActionContent.vue'
@@ -245,7 +245,7 @@ const text = computed(() => props.message.contents
   .map((content: MessageContent & { text: string }) => content.text)
   .join('\n'))
 
-const { perfs } = useLocalPerfStore()
+const { perfs } = useUserPerfsStore()
 const assistantsStore = useAssistantsStore()
 const avatar = computed(() =>
   props.message.type === 'user'

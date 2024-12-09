@@ -1,13 +1,13 @@
 import { Hct, hexFromArgb, themeFromSourceColor, TonalPalette } from '@material/material-color-utilities'
 import { Dark } from 'quasar'
-import { useLocalPerfStore } from 'src/stores/local-perf'
+import { useUserPerfsStore } from 'src/stores/user-perfs'
 import { useUiStateStore } from 'src/stores/ui-state'
 import { watchEffect } from 'vue'
 
 export function useSetTheme() {
   const uiStateStore = useUiStateStore()
   watchEffect(() => {
-    const { perfs } = useLocalPerfStore()
+    const { perfs } = useUserPerfsStore()
     const theme = themeFromSourceColor(Hct.from(perfs.themeHue, 48, 40).toInt())
     const { primary, secondary, tertiary, neutral, neutralVariant, error } = theme.palettes
     const success = TonalPalette.fromHueAndChroma(140, 55)

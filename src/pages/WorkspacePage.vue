@@ -69,7 +69,7 @@ import { useWorkspacesStore } from 'src/stores/workspaces'
 import { useLiveQueryWithDeps } from 'src/composables/live-query'
 import { db } from 'src/utils/db'
 import { Workspace, Dialog } from 'src/utils/types'
-import { useLocalDataStore } from 'src/stores/local-data'
+import { useUserDataStore } from 'src/stores/user-data'
 import { useQuasar } from 'quasar'
 import ErrorNotFound from 'src/pages/ErrorNotFound.vue'
 
@@ -85,7 +85,7 @@ const dialogs = useLiveQueryWithDeps(() => props.id, () => db.dialogs.where('wor
 provide('workspace', workspace)
 provide('dialogs', dialogs)
 
-const { data } = useLocalDataStore()
+const { data } = useUserDataStore()
 watch(workspace, val => {
   if (val) {
     data.lastWorkspaceId = val.id

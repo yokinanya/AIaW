@@ -78,7 +78,7 @@ import ViewCommonHeader from 'src/components/ViewCommonHeader.vue'
 import { useQuasar } from 'quasar'
 import { MarketAssistantSchema } from 'src/utils/types'
 import { Validator } from '@cfworker/json-schema'
-import { caselessIncludes, genId } from 'src/utils/functions'
+import { caselessIncludes } from 'src/utils/functions'
 import AAvatar from 'src/components/AAvatar.vue'
 import { useAssistantsStore } from 'src/stores/assistants'
 import { AssistantDefaultPrompt } from 'src/utils/templates'
@@ -146,18 +146,15 @@ function add(item, workspaceId) {
     return
   }
   const { name, avatar, prompt, promptVars, promptTemplate, model, modelSettings } = toRaw(item)
-  store.put({
-    id: genId(),
+  store.add({
     name,
     avatar,
     prompt,
     promptVars: promptVars ?? [],
     promptTemplate: promptTemplate ?? AssistantDefaultPrompt,
     workspaceId,
-    provider: {},
     model,
-    modelSettings: modelSettings ?? { ...defaultModelSettings },
-    plugins: {}
+    modelSettings: modelSettings ?? { ...defaultModelSettings }
   }).then(() => {
     $q.notify({
       message: '已添加'

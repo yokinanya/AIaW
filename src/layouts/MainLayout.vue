@@ -95,31 +95,35 @@
           >
             <q-menu>
               <q-list>
+                <menu-item
+                  icon="sym_o_book_2"
+                  label="使用指南"
+                  href="https://docs.aiaw.app/usage/"
+                  target="_blank"
+                />
+                <menu-item
+                  icon="sym_o_info"
+                  label="关于"
+                  to="/about"
+                />
                 <q-item
                   clickable
                   v-close-popup
                   min-h-0
+                  href="https://github.com/NitroRCr/AIaW"
+                  target="_blank"
                 >
                   <q-item-section
                     avatar
                     min-w-0
                   >
-                    <q-icon name="sym_o_book_2" />
+                    <q-avatar
+                      icon="svguse:/svg/github.svg#icon"
+                      size="20px"
+                      font-size="20px"
+                    />
                   </q-item-section>
-                  <q-item-section>使用指南</q-item-section>
-                </q-item>
-                <q-item
-                  clickable
-                  v-close-popup
-                  min-h-0
-                >
-                  <q-item-section
-                    avatar
-                    min-w-0
-                  >
-                    <q-icon name="sym_o_info" />
-                  </q-item-section>
-                  <q-item-section>关于</q-item-section>
+                  <q-item-section>GitHub</q-item-section>
                 </q-item>
               </q-list>
             </q-menu>
@@ -134,12 +138,13 @@
 <script setup>
 import { until } from '@vueuse/core'
 import WorkspaceNav from 'src/components/WorkspaceNav.vue'
-import { useLocalDataStore } from 'src/stores/local-data'
+import { useUserDataStore } from 'src/stores/user-data'
 import { useUiStateStore } from 'src/stores/ui-state'
 import { useWorkspacesStore } from 'src/stores/workspaces'
 import { useRoute, useRouter } from 'vue-router'
 import AccountBtn from 'src/components/AccountBtn.vue'
 import DarkSwitchBtn from 'src/components/DarkSwitchBtn.vue'
+import MenuItem from 'src/components/MenuItem.vue'
 
 defineOptions({
   name: 'MainLayout'
@@ -147,13 +152,13 @@ defineOptions({
 
 const uiStore = useUiStateStore()
 const workspacesStore = useWorkspacesStore()
-const localDataStore = useLocalDataStore()
+const userDataStore = useUserDataStore()
 const route = useRoute()
 const router = useRouter()
 
 async function openLastWorkspace() {
-  await until(() => localDataStore.ready).toBeTruthy()
-  const wsId = localDataStore.data.lastWorkspaceId
+  await until(() => userDataStore.ready).toBeTruthy()
+  const wsId = userDataStore.data.lastWorkspaceId
   const dialogId = workspacesStore.workspaces.find(item => item.id === wsId)?.lastDialogId
   if (route.path === '/' && wsId) {
     router.push(dialogId ? `/workspaces/${wsId}/dialogs/${dialogId}` : `/workspaces/${wsId}`)

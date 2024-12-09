@@ -5,10 +5,24 @@
     </q-toolbar-title>
     <q-space />
   </view-common-header>
-  <q-page-container v-if="assistant">
-    <q-page pb-2>
+  <q-page-container
+    v-if="assistant"
+    bg-sur-c-low
+  >
+    <q-page
+      pb-2
+      of-y-auto
+      bg-sur
+      :class="{ 'rd-rt-lg': rightDrawerAbove }"
+      :style-fn="(offset, height) => ({
+        height: `${height - offset}px`
+      })"
+    >
       <q-list>
-        <q-item-label header>
+        <q-item-label
+          header
+          id="assistant"
+        >
           助手
         </q-item-label>
         <q-item>
@@ -27,10 +41,7 @@
           @click="pickAvatar"
         >
           <q-item-section>头像</q-item-section>
-          <q-item-section
-            side
-            text-on-sur
-          >
+          <q-item-section side>
             <a-avatar :avatar="assistant.avatar" />
           </q-item-section>
         </q-item>
@@ -72,60 +83,37 @@
           </q-item-section>
         </q-item>
         <q-separator spaced />
-        <q-item-label header>
+        <q-item-label
+          header
+          id="model"
+        >
           模型
         </q-item-label>
-        <model-input-item v-model="assistant.model" />
-        <q-separator spaced />
-        <q-item-label header>
-          服务商
-        </q-item-label>
-        <q-item>
-          <q-item-section>服务商</q-item-section>
-          <q-item-section side>
-            <provider-input
-              class="w-150px"
-              v-model="assistant.provider.type"
-              filled
-              dense
-              clearable
-            />
-          </q-item-section>
-        </q-item>
-        <q-item>
-          <q-item-section>API Key</q-item-section>
-          <q-item-section side>
-            <q-input
-              class="w-250px"
-              filled
-              dense
-              v-model="assistant.provider.apiKey"
-              type="password"
-              clearable
-            />
-          </q-item-section>
-        </q-item>
-        <q-item>
-          <q-item-section>API 代理地址</q-item-section>
-          <q-item-section side>
-            <q-input
-              class="w-250px"
-              filled
-              dense
-              v-model="assistant.provider.baseURL"
-              clearable
-            />
-          </q-item-section>
-        </q-item>
+        <model-input-items v-model="assistant.model" />
         <q-item-label
           caption
           p="x-4 y-2"
           text-on-sur-var
         >
-          如果留空，则使用全局默认服务商设置
+          留空则使用全局模型设置；此设置也会被对话中切换的模型覆盖
         </q-item-label>
         <q-separator spaced />
-        <q-item>
+        <q-item-label
+          header
+          id="provider"
+        >
+          服务商
+        </q-item-label>
+        <provider-input-items v-model="assistant.provider" />
+        <q-item-label
+          caption
+          p="x-4 y-2"
+          text-on-sur-var
+        >
+          留空则使用全局服务商设置
+        </q-item-label>
+        <q-separator spaced />
+        <q-item id="plugins">
           <q-item-section text-sec>
             插件
           </q-item-section>
@@ -178,7 +166,10 @@
           </q-item-section>
         </q-item>
         <q-separator spaced />
-        <q-item-label header>
+        <q-item-label
+          header
+          id="model-settings"
+        >
           模型设置
         </q-item-label>
         <q-item>
@@ -361,8 +352,8 @@
 <script setup lang="ts">
 import { syncRef } from 'src/composables/sync-ref'
 import { useAssistantsStore } from 'src/stores/assistants'
-import { toRaw } from 'vue'
-import ProviderInput from 'src/components/ProviderInput.vue'
+import { inject, toRaw } from 'vue'
+import ProviderInputItems from 'src/components/ProviderInputItems.vue'
 import PromptVarEditor from 'src/components/PromptVarEditor.vue'
 import { usePluginsStore } from 'src/stores/plugins'
 import { AssistantPlugin, Plugin, Assistant } from 'src/utils/types'
@@ -370,9 +361,10 @@ import ViewCommonHeader from 'src/components/ViewCommonHeader.vue'
 import AAvatar from 'src/components/AAvatar.vue'
 import { useQuasar } from 'quasar'
 import PickAvatarDialog from 'src/components/PickAvatarDialog.vue'
-import ModelInputItem from 'src/components/ModelInputItem.vue'
+import ModelInputItems from 'src/components/ModelInputItems.vue'
 import ErrorNotFound from 'src/pages/ErrorNotFound.vue'
 import PluginTypeBadge from 'src/components/PluginTypeBadge.vue'
+import { useLocateId } from 'src/composables/locate-id'
 
 const props = defineProps<{
   id: string
@@ -430,4 +422,7 @@ function pickAvatar() {
     assistant.value.avatar = avatar
   })
 }
+
+const rightDrawerAbove = inject('rightDrawerAbove')
+useLocateId(assistant)
 </script>

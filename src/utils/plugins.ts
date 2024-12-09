@@ -241,7 +241,7 @@ function buildGradioSettings(endpoint: GradioManifestEndpoint) {
 function buildGradioPlugin(manifest: GradioPluginManifest, available: boolean): Plugin {
   const { id, title, description, prompt, promptVars, noRoundtrip } = manifest
   const settings = {
-    _hfToken: TOptional(TString({ title: 'HF Token', description: 'Hugging Face API Token' }))
+    _hfToken: TOptional(TString({ title: 'HF Token', description: 'Hugging Face API Token', format: 'password' }))
   }
   for (const endpoint of manifest.endpoints) {
     settings[endpoint.name] = buildGradioSettings(endpoint)

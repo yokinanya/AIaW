@@ -10,10 +10,10 @@
 </template>
 
 <script setup lang="ts">
-import { useLocalPerfStore } from 'src/stores/local-perf'
+import { useUserPerfsStore } from 'src/stores/user-perfs'
 import { computed } from 'vue'
 
-const { perfs } = useLocalPerfStore()
+const { perfs } = useUserPerfsStore()
 
 const options = new Map()
 options.set('auto', { title: '切换至深色', icon: 'sym_o_dark_mode', next: true })

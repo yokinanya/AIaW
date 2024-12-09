@@ -102,6 +102,10 @@ body.body--light {
   color: var(--a-on-sur-var);
 }
 
+.q-item__section--avatar {
+  color: inherit;
+}
+
 :not(pre)>code {
   --at-apply: 'bg-sur-c text-on-sur-var rd px-1 mx-1';
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;

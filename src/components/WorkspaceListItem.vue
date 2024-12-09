@@ -23,47 +23,37 @@
       </q-item-section>
       <q-menu context-menu>
         <q-list style="min-width: 100px">
-          <q-item
-            clickable
-            v-close-popup
+          <menu-item
+            icon="sym_o_edit"
+            label="重命名"
             @click="renameItem(item)"
-            min-h-0
-          >
-            <q-item-section>重命名</q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-close-popup
+          />
+          <menu-item
+            icon="sym_o_interests"
+            label="更换图标"
             @click="changeAvatar(item)"
-            min-h-0
-          >
-            <q-item-section>更换图标</q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-close-popup
-            @click="deleteItem(item)"
-            min-h-0
-            hover:text-err
-          >
-            <q-item-section>删除</q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-close-popup
+          />
+          <menu-item
+            icon="sym_o_add"
+            label="新建工作区"
             @click="addWorkspace(item.id)"
-            min-h-0
-          >
-            <q-item-section>新建工作区</q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-close-popup
+          />
+          <menu-item
+            icon="sym_o_create_new_folder"
+            label="新建文件夹"
             @click="addFolder(item.id)"
-            min-h-0
-          >
-            <q-item-section>新建文件夹</q-item-section>
-          </q-item>
+          />
+          <menu-item
+            icon="sym_o_move_item"
+            label="移动至"
+            @click="moveItem(item, [item.id])"
+          />
+          <menu-item
+            icon="sym_o_delete"
+            label="删除"
+            @click="deleteItem(item)"
+            hover:text-err
+          />
         </q-list>
       </q-menu>
     </template>
@@ -98,39 +88,27 @@
     <q-item-section>{{ item.name }}</q-item-section>
     <q-menu context-menu>
       <q-list style="min-width: 100px">
-        <q-item
-          clickable
-          v-close-popup
+        <menu-item
+          icon="sym_o_edit"
+          label="重命名"
           @click="renameItem(item)"
-          min-h-0
-        >
-          <q-item-section>重命名</q-item-section>
-        </q-item>
-        <q-item
-          clickable
-          v-close-popup
+        />
+        <menu-item
+          icon="sym_o_interests"
+          label="更换图标"
           @click="changeAvatar(item)"
-          min-h-0
-        >
-          <q-item-section>更换图标</q-item-section>
-        </q-item>
-        <q-item
-          clickable
-          v-close-popup
+        />
+        <menu-item
+          icon="sym_o_move_item"
+          label="移动至"
           @click="moveItem(item)"
-          min-h-0
-        >
-          <q-item-section>移动至</q-item-section>
-        </q-item>
-        <q-item
-          clickable
-          v-close-popup
+        />
+        <menu-item
+          icon="sym_o_delete"
+          label="删除"
           @click="deleteItem(item)"
-          min-h-0
           hover:text-err
-        >
-          <q-item-section>删除</q-item-section>
-        </q-item>
+        />
       </q-list>
     </q-menu>
   </q-item>
@@ -142,6 +120,7 @@ import { useWorkspacesStore } from 'src/stores/workspaces'
 import { Folder, Workspace } from 'src/utils/types'
 import AAvatar from './AAvatar.vue'
 import { useWorkspaceActions } from 'src/composables/workspace-actions'
+import MenuItem from './MenuItem.vue'
 
 const props = defineProps<{
   item: Workspace | Folder

@@ -233,8 +233,34 @@
           />
           <q-space />
           <div
+            v-if="assistant && activePlugins.length"
+            my-2
+            @click="$router.push(`../assistants/${assistant.id}#plugins`)"
+            cursor-pointer
+          >
+            <q-icon
+              name="sym_o_extension"
+              size="24px"
+            />
+            <code
+              bg-sur-c-high
+              px-2
+              py-1
+            >{{ activePlugins.length }}</code>
+            <q-tooltip>
+              已启用插件
+              <template
+                v-for="p of activePlugins"
+                :key="p.id"
+              >
+                <br>- {{ p.title }}
+              </template>
+            </q-tooltip>
+          </div>
+          <div
             v-if="usage"
             my-2
+            ml-2
           >
             <q-icon
               name="sym_o_generating_tokens"
@@ -320,12 +346,12 @@ import { useCallApi } from 'src/composables/call-api'
 import { until } from '@vueuse/core'
 import ViewCommonHeader from 'src/components/ViewCommonHeader.vue'
 import { syncRef } from 'src/composables/sync-ref'
-import { useLocalPerfStore } from 'src/stores/local-perf'
+import { useUserPerfsStore } from 'src/stores/user-perfs'
 import ModelItem from 'src/components/ModelItem.vue'
 import ParseFilesDialog from 'src/components/ParseFilesDialog.vue'
 import MessageFile from 'src/components/MessageFile.vue'
-import { models } from 'src/utils/values'
-import { useLocalDataStore } from 'src/stores/local-data'
+import { dialogOptions, models } from 'src/utils/values'
+import { useUserDataStore } from 'src/stores/user-data'
 import ErrorNotFound from 'src/pages/ErrorNotFound.vue'
 import { useRoute, useRouter } from 'vue-router'
 import AbortableBtn from 'src/components/AbortableBtn.vue'
@@ -464,11 +490,12 @@ function onTextPaste(ev: ClipboardEvent) {
       .replace(/\r\n/g, '\n')
       .replace(/\r/g, '\n')
     if (!/\s/.test(code)) return
-    ev.preventDefault()
     const data = clipboardData.getData('vscode-editor-data')
     const lang = JSON.parse(data).mode ?? ''
+    if (lang === 'markdown') return
     const wrappedCode = wrapCode(code, lang)
     document.execCommand('insertText', false, wrappedCode)
+    ev.preventDefault()
   }
 }
 
@@ -481,6 +508,7 @@ function onInputFiles({ target }) {
 }
 function onPaste(ev: ClipboardEvent) {
   const { clipboardData } = ev
+  if (clipboardData.types.includes('text/plain')) return
   parseFiles(Array.from(clipboardData.files) as File[])
 }
 addEventListener('paste', onPaste)
@@ -677,7 +705,7 @@ const { callApi } = useCallApi({ workspace, dialog })
 
 const { sdkModel, model } = useModel(computed(() => assistant.value?.provider), computed(() => dialog.value?.modelOverride || assistant.value?.model))
 const $q = useQuasar()
-const { data } = useLocalDataStore()
+const { data } = useUserDataStore()
 async function send() {
   if (!assistant.value) {
     $q.notify({ message: '请设置助手', color: 'negative' })
@@ -692,16 +720,9 @@ async function send() {
       title: '是否需要新建对话？',
       message: '一个新用户常见的误区是，始终在一个对话中提问，即使问题之间没有关联。\n实际上，当你问一个与前文无关的新问题时，就应该新建一个对话，以避免上下文的累计导致输入开销不断增大',
       persistent: true,
-      ok: {
-        label: '我会新建一个对话',
-        flat: true,
-        color: 'primary'
-      },
-      cancel: {
-        label: '我知道这些，无需提醒',
-        flat: true,
-        color: 'primary'
-      }
+      ok: '我会新建一个对话',
+      cancel: '我知道这些，无需提醒',
+      ...dialogOptions
     }).onCancel(() => {
       data.noobAlertDismissed = true
       send()
@@ -781,7 +802,7 @@ async function stream(target, insert = false) {
   const actions = []
   const enabledPlugins = []
   let noRoundtrip = true
-  await Promise.all(pluginsStore.plugins.filter(p => p.available && plugins[p.id]?.enabled).map(async p => {
+  await Promise.all(activePlugins.value.map(async p => {
     noRoundtrip &&= p.noRoundtrip
     const plugin = plugins[p.id]
     const pluginVars = {
@@ -937,6 +958,7 @@ async function stream(target, insert = false) {
     await db.messages.update(id, { contents, error: e.message, status: 'failed', generatingSession: null })
   }
 }
+const activePlugins = computed<Plugin[]>(() => pluginsStore.plugins.filter(p => p.available && assistant.value.plugins[p.id]?.enabled))
 const usage = computed(() => messageMap.value[chain.value.at(-2)]?.usage)
 
 const systemModel = useSystemModel()
@@ -998,7 +1020,7 @@ watch(dialog, val => {
   }
 })
 
-const { perfs } = useLocalPerfStore()
+const { perfs } = useUserPerfsStore()
 
 defineEmits(['toggle-drawer'])
 </script>

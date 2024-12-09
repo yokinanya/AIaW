@@ -39,10 +39,7 @@
           <q-item-section>
             工作区图标
           </q-item-section>
-          <q-item-section
-            side
-            text-on-sur
-          >
+          <q-item-section side>
             <a-avatar :avatar="workspace.avatar" />
           </q-item-section>
         </q-item>

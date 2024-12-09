@@ -2,12 +2,6 @@ import { LobeChatPluginManifest, PluginSchema } from '@lobehub/chat-plugin-sdk'
 import { Any, Array, Boolean, Literal, Number, Object, Optional, Static, String, Union } from '@sinclair/typebox'
 import { LanguageModelUsage } from 'ai'
 
-interface Provider {
-  type?: 'openai' | 'authropic' | 'google'
-  baseURL?: string
-  apiKey?: string
-}
-
 interface ModelSettings {
   temperature: number
   topP: number
@@ -62,6 +56,20 @@ interface IconAvatar {
   title?: string
 }
 type Avatar = SvgAvatar | TextAvatar | ImageAvatar | UrlAvatar | IconAvatar
+
+const ProviderSchema = Object({
+  type: String(),
+  settings: Object(undefined)
+})
+type Provider = Static<typeof ProviderSchema>
+interface ProviderType {
+  name: string
+  label: string
+  avatar: Avatar
+  settings: PluginSchema
+  initialSettings
+  constructor: (settings) => any
+}
 
 interface AvatarImage {
   id: string
@@ -441,10 +449,12 @@ export {
   HuggingPluginManifestSchema,
   GradioPluginManifestSchema,
   LobePluginManifestSchema,
-  MarketAssistantSchema
+  MarketAssistantSchema,
+  ProviderSchema
 }
 export type {
   Provider,
+  ProviderType,
   ModelSettings,
   PromptVar,
   PromptVarValue,

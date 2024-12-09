@@ -158,7 +158,7 @@ import { useDialogPluginComponent } from 'quasar'
 import { Avatar } from 'src/utils/types'
 import { ref, watch } from 'vue'
 import AvatarPanel from './AvatarPanel.vue'
-import { useLocalPerfStore } from 'src/stores/local-perf'
+import { useUserPerfsStore } from 'src/stores/user-perfs'
 import AAvatar from './AAvatar.vue'
 import HueSlider from './HueSlider.vue'
 import ImageInputArea from './ImageInputArea.vue'
@@ -178,7 +178,7 @@ defineEmits([
 
 const tab = ref(props.defaultTab)
 
-const { perfs } = useLocalPerfStore()
+const { perfs } = useUserPerfsStore()
 const selected = ref<Avatar>({ ...props.model })
 function select(avatar: Avatar, addColor: boolean = false) {
   if (addColor) {
@@ -215,7 +215,10 @@ const presetAvatars = {
     { type: 'svg', name: 'deepseek-c' },
     { type: 'svg', name: 'google-c' },
     { type: 'svg', name: 'alibaba-c' },
-    { type: 'svg', name: 'huggingface-c' }
+    { type: 'svg', name: 'huggingface-c' },
+    { type: 'svg', name: 'microsoft-c' },
+    { type: 'svg', name: 'togetherai-c' },
+    { type: 'svg', name: 'cohere-c' }
   ] as Avatar[],
   definitelyAIs: [
     { type: 'url', url: '/ai-avatars/alice.webp', title: 'AL-1S' },
@@ -231,7 +234,7 @@ const presetAvatars = {
     { type: 'url', url: '/ai-avatars/cyberlife.png', title: 'CyberLife' },
     { type: 'url', url: '/ai-avatars/android.webp', title: 'Android' },
     { type: 'url', url: '/ai-avatars/detroit.webp', title: 'Detroit' },
-    { type: 'url', url: '/ai-avatars/rhine.webp', title: 'Rhine Lab' }
+    { type: 'url', url: '/ai-avatars/33.avif', title: '33' }
   ] as Avatar[],
   icons: materialSymbols.map(icon => ({ type: 'icon', icon: `sym_o_${icon}`, title: icon })) as Avatar[]
 }

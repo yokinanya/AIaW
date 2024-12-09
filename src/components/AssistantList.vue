@@ -21,41 +21,27 @@
         context-menu
       >
         <q-list style="min-width: 100px">
-          <q-item
-            clickable
-            v-close-popup
-            v-if="workspaceId !== '$root'"
+          <menu-item
+            icon="sym_o_add_comment"
+            label="新建对话"
             @click="createDialog({ assistantId: assistant.id })"
-            min-h-0
-          >
-            <q-item-section>新建对话</q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-close-popup
-            v-if="workspaceId !== '$root'"
+          />
+          <menu-item
+            icon="sym_o_move_item"
+            label="移至全局"
             @click="move(assistant.id, '$root')"
-            min-h-0
-          >
-            <q-item-section>移至全局</q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-close-popup
+          />
+          <menu-item
+            icon="sym_o_move_item"
+            label="移至工作区"
             @click="moveToWorkspace(assistant.id)"
-            min-h-0
-          >
-            <q-item-section>移至工作区</q-item-section>
-          </q-item>
-          <q-item
-            clickable
-            v-close-popup
+          />
+          <menu-item
+            icon="sym_o_delete"
+            label="删除"
             @click="deleteItem(assistant.id)"
-            min-h-0
             hover:text-err
-          >
-            <q-item-section>删除</q-item-section>
-          </q-item>
+          />
         </q-list>
       </q-menu>
     </q-item>
@@ -86,6 +72,7 @@ import { useRouter } from 'vue-router'
 import AAvatar from './AAvatar.vue'
 import SelectWorkspaceDialog from './SelectWorkspaceDialog.vue'
 import { useCreateDialog } from 'src/composables/create-dialog'
+import MenuItem from './MenuItem.vue'
 
 const props = defineProps<{
   workspaceId: string
@@ -100,7 +87,7 @@ function getLink(id) {
 }
 const router = useRouter()
 async function addItem() {
-  const id = await assistantsStore.add('新助手', props.workspaceId)
+  const id = await assistantsStore.add({ workspaceId: props.workspaceId })
   router.push(getLink(id))
 }
 

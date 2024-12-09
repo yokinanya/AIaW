@@ -78,9 +78,9 @@ const AssistantDefaultPrompt =
 const defaultWsIndexContent =
 `## {{ workspace.name }}
 
-这里是工作区主页。你可以在右上角工作区设置中更改在此处显示的内容。
+这里是工作区主页。
 
-在右侧，点击“新建对话”以开始对话。
+点击右侧边栏的「新建对话」即可开始对话。
 
 ### 使用指南
 

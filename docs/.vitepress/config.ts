@@ -7,22 +7,30 @@ export default defineConfig({
   themeConfig: {
     // https://vitepress.dev/reference/default-theme-config
     nav: [
-      { text: 'Home', link: '/' },
-      { text: 'Examples', link: '/markdown-examples' }
+      { text: '使用文档', link: '/usage/' },
+      { text: '开始使用', link: 'https://aiaw.app' }
     ],
 
     sidebar: [
       {
-        text: 'Examples',
+        text: '使用文档',
         items: [
-          { text: 'Markdown Examples', link: '/markdown-examples' },
-          { text: 'Runtime API Examples', link: '/api-examples' }
+          { text: '功能概览', link: '/usage/' },
+          { text: '文件解析', link: '/usage/file-parse' },
+          { text: '多模态', link: '/usage/multimodal' },
+          { text: '跨平台', link: '/usage/cross-platform' },
+          { text: '插件系统', link: '/usage/plugins' },
+          { text: '提示词变量', link: '/usage/prompt-vars' },
+          { text: '工作区', link: '/usage/workspaces' },
+          { text: '个性化设置', link: '/usage/personalization' },
+          { text: '数据与同步', link: '/usage/data-sync' },
+          { text: '模型服务', link: '/usage/model-service' }
         ]
       }
     ],
 
     socialLinks: [
-      { icon: 'github', link: 'https://github.com/vuejs/vitepress' }
+      { icon: 'github', link: 'https://github.com/NitroRCr/AIaW' }
     ],
     search: {
       provider: 'local'

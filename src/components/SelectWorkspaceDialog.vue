@@ -26,7 +26,7 @@
           flat
           color="primary"
           label="确定"
-          :disable="!selected"
+          :disable="!selected || exclude?.includes(selected)"
           @click="onDialogOK(selected)"
         />
       </q-card-actions>
@@ -40,7 +40,8 @@ import { ref } from 'vue'
 import WorkspaceListSelect from './WorkspaceListSelect.vue'
 
 defineProps<{
-  accept: 'workspace' | 'folder'
+  accept: 'workspace' | 'folder',
+  exclude?: string[]
 }>()
 
 defineEmits([

@@ -38,7 +38,7 @@ db.version(3).stores({
 })
 
 const defaultModelSettings = {
-  temperature: 0.5,
+  temperature: 0.6,
   topP: 1,
   presencePenalty: 0,
   frequencyPenalty: 0,
@@ -69,13 +69,13 @@ db.on.populate.subscribe(() => {
       prompt: '',
       promptTemplate: AssistantDefaultPrompt,
       promptVars: [],
-      provider: {},
+      provider: null,
       model: null,
       modelSettings: { ...defaultModelSettings },
       plugins: {}
     })
     db.reactives.add({
-      key: '#local-data',
+      key: '#user-data',
       value: {
         lastWorkspaceId: initialWorkspaceId
       }

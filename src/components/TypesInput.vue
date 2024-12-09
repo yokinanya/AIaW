@@ -4,21 +4,16 @@
       v-if="options"
       v-model="model"
       :options
-      :dense
-      :filled
-      :outlined
       :label
-      :hint
+      v-bind="inputProps"
       :class="$attrs.class"
     />
-    <q-input
+    <component
+      :is="inputComponent"
       v-else
       v-model="model"
-      :dense
-      :filled
-      :outlined
       :label
-      :hint
+      v-bind="inputProps"
       :class="$attrs.class"
     />
   </template>
@@ -28,11 +23,8 @@
       v-model="model"
       multiple
       :options
-      :dense
-      :filled
-      :outlined
       :label
-      :hint
+      v-bind="inputProps"
       :class="$attrs.class"
     />
     <q-select
@@ -45,24 +37,19 @@
       input-debounce="0"
       new-value-mode="add"
       class="input-item"
-      :dense
-      :filled
-      :outlined
       :label
-      :hint
+      v-bind="inputProps"
       :class="$attrs.class"
     />
   </template>
 
-  <q-input
+  <component
+    :is="inputComponent"
     v-else-if="type === 'number'"
     v-model.number="model"
     type="number"
-    :dense
-    :filled
-    :outlined
     :label
-    :hint
+    v-bind="inputProps"
     :class="$attrs.class"
   />
   <q-toggle
@@ -75,14 +62,17 @@
 </template>
 
 <script setup lang="ts">
-defineProps<{
+import { computed } from 'vue'
+import LazyInput from './LazyInput.vue'
+
+const props = defineProps<{
   type: 'string' | 'array' | 'number' | 'boolean'
   options?: string[]
-  dense?: boolean
-  filled?: boolean
-  outlined?: boolean
   label?: string
-  hint?: string
+  inputProps?: Record<string, any>
+  lazy?: boolean
 }>()
 const model = defineModel<any>()
+
+const inputComponent = computed(() => props.lazy ? LazyInput : 'q-input')
 </script>

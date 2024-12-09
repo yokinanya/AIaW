@@ -21,7 +21,7 @@ export function useLoginDialogs() {
           label: 'Email'
         },
         cancel: true,
-        persistent: true,
+        ok: '下一步',
         ...dialogOptions
       }).onOk(email => {
         interaction.onSubmit({ email })
@@ -49,6 +49,7 @@ export function useLoginDialogs() {
         title: '退出登录',
         message: '确定要退出登录吗？',
         cancel: true,
+        ok: '退出登录',
         persistent: true,
         ...dialogOptions
       }).onOk(() => {

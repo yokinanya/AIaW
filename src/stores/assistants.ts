@@ -8,19 +8,20 @@ import { AssistantDefaultPrompt } from 'src/utils/templates'
 export const useAssistantsStore = defineStore('assistants', () => {
   const assistants = useLiveQuery(() => db.assistants.toArray(), { initialValue: [] as Assistant[] })
 
-  async function add(name: string, workspaceId = '$root') {
+  async function add(props: Partial<Assistant> = {}) {
     return await db.assistants.add({
+      name: '新助手',
       id: genId(),
-      name,
       avatar: defaultAvatar('AI'),
-      workspaceId,
+      workspaceId: '$root',
       prompt: '',
       promptTemplate: AssistantDefaultPrompt,
       promptVars: [],
-      provider: {},
+      provider: null,
       model: null,
       modelSettings: { ...defaultModelSettings },
-      plugins: {}
+      plugins: {},
+      ...props
     })
   }
 

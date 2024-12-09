@@ -38,7 +38,7 @@
 
 <script setup lang="ts">
 import { Screen } from 'quasar'
-import { useLocalDataStore } from 'src/stores/local-data'
+import { useUserDataStore } from 'src/stores/user-data'
 import { computed } from 'vue'
 
 const props = defineProps<{
@@ -47,7 +47,7 @@ const props = defineProps<{
   long?: boolean
 }>()
 
-const { data } = useLocalDataStore()
+const { data } = useUserDataStore()
 const dismissed = data.tipDismissed[props.tipKey]
 function dismiss() {
   data.tipDismissed[props.tipKey] = true

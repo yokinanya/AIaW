@@ -1,5 +1,6 @@
-import { Loading, LocalStorage } from 'quasar'
+import { Loading } from 'quasar'
 import { register } from 'register-service-worker'
+import { localData } from 'src/utils/local-data'
 
 // The ready(), registered(), cached(), updatefound() and updated()
 // events passes a ServiceWorkerRegistration instance in their arguments.
@@ -33,12 +34,12 @@ register(process.env.SERVICE_WORKER_FILE, {
 
   updated(/* registration */) {
     // console.log('New content is available; please refresh.')
-    const lastReload = LocalStorage.getItem('last-reload-timestamp')
+    const lastReload = localData.lastReloadTimestamp
     if (lastReload && Date.now() - lastReload < 5000) {
       // Prevent infinite reloads
       return
     }
-    LocalStorage.setItem('last-reload-timestamp', Date.now())
+    localData.lastReloadTimestamp = Date.now()
     // if directly reload without timeout, the content won't be updated. I don't know why.
     setTimeout(() => {
       location.reload()

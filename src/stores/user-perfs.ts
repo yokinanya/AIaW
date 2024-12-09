@@ -20,17 +20,13 @@ interface Perfs {
   codePasteOptimize: boolean
 }
 
-export const useLocalPerfStore = defineStore('local-perf', () => {
+export const useUserPerfsStore = defineStore('user-perfs', () => {
   const defaultPerfs: Perfs = {
     darkMode: 'auto',
     themeHue: 300,
-    provider: {
-      type: 'openai',
-      apiKey: null,
-      baseURL: null
-    },
-    model: models.find(m => m.name === 'gpt-4o'),
-    systemProvider: {},
+    provider: null,
+    model: models.find(m => m.name === 'gpt-4o-2024-08-06'),
+    systemProvider: null,
     systemModel: models.find(m => m.name === 'gpt-4o-mini'),
     userAvatar: {
       type: 'text',
@@ -52,7 +48,7 @@ export const useLocalPerfStore = defineStore('local-perf', () => {
     messageQuoteBtn: true,
     codePasteOptimize: true
   }
-  const [perfs, ready] = persistentReactive('#local-perf', defaultPerfs)
+  const [perfs, ready] = persistentReactive('#user-perfs', defaultPerfs)
   watchEffect(() => {
     Dark.set(perfs.darkMode)
   })

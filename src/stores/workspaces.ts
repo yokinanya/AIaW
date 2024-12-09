@@ -2,32 +2,34 @@ import { defineStore } from 'pinia'
 import { useLiveQuery } from 'src/composables/live-query'
 import { db } from 'src/utils/db'
 import { genId } from 'src/utils/functions'
-import { Workspace } from 'src/utils/types'
+import { Folder, Workspace } from 'src/utils/types'
 import { defaultWsIndexContent } from 'src/utils/templates'
 
 export const useWorkspacesStore = defineStore('workspaces', () => {
   const workspaces = useLiveQuery(() => db.workspaces.toArray(), { initialValue: [] as Workspace[] })
 
-  async function addWorkspace(name: string, parentId = '$root') {
+  async function addWorkspace(props: Partial<Workspace>) {
     return await db.workspaces.add({
       id: genId(),
-      name,
+      name: '新工作区',
       avatar: { type: 'icon', icon: 'sym_o_deployed_code' },
       type: 'workspace',
-      parentId,
+      parentId: '$root',
       prompt: '',
       indexContent: defaultWsIndexContent,
-      vars: {}
+      vars: {},
+      ...props
     } as Workspace)
   }
 
-  async function addFolder(name: string, parentId = '$root') {
+  async function addFolder(props: Partial<Folder>) {
     return await db.workspaces.add({
       id: genId(),
-      name,
+      name: '新文件夹',
       avatar: { type: 'icon', icon: 'sym_o_folder' },
       type: 'folder',
-      parentId
+      parentId: '$root',
+      ...props
     })
   }
 

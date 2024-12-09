@@ -65,9 +65,7 @@
               剩余试用天数：{{ user.license.evalDaysLeft }}
             </q-item-label>
           </q-item-section>
-          <q-item-section
-            side
-          >
+          <q-item-section side>
             <q-btn
               unelevated
               label="订阅"
@@ -103,7 +101,17 @@
         <q-item>
           <q-item-section>
             <q-item-label caption>
-              一站式地使用不同服务商的各种先进模型，包括 gpt-4o、claude-3-5-sonnet、o1-mini 等。随用随充，额度永久有效。按照官方API原价扣费（按USD/CNY=7计算）
+              一站式地使用不同服务商的各种先进模型，包括 gpt-4o、claude-3-5-sonnet、o1-mini 等，无需配置。额度随用随充，永久有效。按照官方API原价扣费（按USD/CNY=7计算）
+            </q-item-label>
+          </q-item-section>
+        </q-item>
+        <q-item>
+          <q-item-section>
+            <q-item-label>
+              状态
+            </q-item-label>
+            <q-item-label caption>
+              {{ !perfs.provider && user.isLoggedIn ? '正在使用（作为全局默认服务商）' : '未使用（已配置全局自定义服务商）' }}
             </q-item-label>
           </q-item-section>
         </q-item>
@@ -170,6 +178,7 @@ import { LitellmBaseURL, SyncServicePrice, UsdToCnyRate } from 'src/utils/config
 import TopupDialog from 'src/components/TopupDialog.vue'
 import { useRouter } from 'vue-router'
 import PayDialog from 'src/components/PayDialog.vue'
+import { useUserPerfsStore } from 'src/stores/user-perfs'
 
 const user = useObservable(db.cloud.currentUser)
 const router = useRouter()
@@ -248,4 +257,6 @@ const orderHistoryColumns = [
   { name: 'type', label: '类型', field: row => row.item.type, format: val => itemTypes[val] },
   { name: 'amount', label: '数量', field: row => row.item.amount }
 ]
+
+const { perfs } = useUserPerfsStore()
 </script>

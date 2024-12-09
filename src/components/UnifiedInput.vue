@@ -3,8 +3,10 @@
     v-if="component === 'input'"
     :type
     :options
+    :lazy
     :label
     :hint="description"
+    :input-props
     v-model="model"
   />
   <q-item v-else-if="component === 'item'">
@@ -23,9 +25,13 @@
       <types-input
         :type
         :options
+        :lazy
         v-model="model"
-        dense
-        filled
+        :input-props="{
+          dense: true,
+          filled: true,
+          ...inputProps
+        }"
         class="xs:w-150px sm:w-250px"
       />
     </q-item-section>
@@ -41,6 +47,8 @@ defineProps<{
   options?: string[]
   label?: string
   description?: string
+  inputProps?: Record<string, any>
+  lazy?: boolean
 }>()
 
 const model = defineModel<string | number | boolean | string[]>()

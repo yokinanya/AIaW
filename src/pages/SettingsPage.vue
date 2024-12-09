@@ -26,47 +26,12 @@
         <q-item-label header>
           自定义服务商
         </q-item-label>
-        <q-item>
-          <q-item-section>服务商</q-item-section>
-          <q-item-section side>
-            <provider-input
-              class="min-w-150px"
-              v-model="perfs.provider.type"
-              filled
-              dense
-            />
-          </q-item-section>
-        </q-item>
-        <q-item>
-          <q-item-section>API Key</q-item-section>
-          <q-item-section side>
-            <lazy-input
-              class="min-w-250px"
-              filled
-              dense
-              v-model="perfs.provider.apiKey"
-              type="password"
-              clearable
-            />
-          </q-item-section>
-        </q-item>
-        <q-item>
-          <q-item-section>API 代理地址</q-item-section>
-          <q-item-section side>
-            <lazy-input
-              class="min-w-250px"
-              filled
-              dense
-              v-model="perfs.provider.baseURL"
-              clearable
-            />
-          </q-item-section>
-        </q-item>
+        <provider-input-items v-model="perfs.provider" />
         <q-item>
           <q-item-section>
             <q-item-label>分享链接</q-item-label>
             <q-item-label caption>
-              用于分享你的服务商、API Key和代理地址设置。其他人打开链接后，会自动应用此设置
+              用于分享你的服务商设置。其他人打开链接后，会自动应用此设置
             </q-item-label>
           </q-item-section>
           <q-item-section side>
@@ -82,9 +47,9 @@
           caption
           p="x-4 y-2"
           text-on-sur-var
-          v-if="!perfs.provider.apiKey && user.isLoggedIn"
+          v-if="!perfs.provider && user.isLoggedIn"
         >
-          当前自定义 API Key 为空，将使用我们提供的模型服务。详见<router-link
+          当前未配置自定义服务商，将默认使用我们提供的模型服务。详见<router-link
             pri-link
             to="/account"
           >
@@ -95,49 +60,13 @@
         <q-item-label header>
           默认模型
         </q-item-label>
-        <model-input-item v-model="perfs.model" />
+        <model-input-items v-model="perfs.model" />
         <q-separator spaced />
         <q-item-label header>
           系统助手
         </q-item-label>
-        <q-item>
-          <q-item-section>服务商</q-item-section>
-          <q-item-section side>
-            <provider-input
-              class="w-150px"
-              v-model="perfs.systemProvider.type"
-              filled
-              dense
-              clearable
-            />
-          </q-item-section>
-        </q-item>
-        <q-item>
-          <q-item-section>API Key</q-item-section>
-          <q-item-section side>
-            <lazy-input
-              class="w-250px"
-              filled
-              dense
-              v-model="perfs.systemProvider.apiKey"
-              type="password"
-              clearable
-            />
-          </q-item-section>
-        </q-item>
-        <q-item>
-          <q-item-section>API 代理地址</q-item-section>
-          <q-item-section side>
-            <lazy-input
-              class="w-250px"
-              filled
-              dense
-              v-model="perfs.systemProvider.baseURL"
-              clearable
-            />
-          </q-item-section>
-        </q-item>
-        <model-input-item v-model="perfs.systemModel" />
+        <provider-input-items v-model="perfs.systemProvider" />
+        <model-input-items v-model="perfs.systemModel" />
         <q-item>
           <q-item-section>
             <q-item-label>自动总结对话标题</q-item-label>
@@ -314,25 +243,24 @@
 
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
-import { useLocalPerfStore } from 'src/stores/local-perf'
+import { useUserPerfsStore } from 'src/stores/user-perfs'
 import HctPreviewCircle from 'src/components/HctPreviewCircle.vue'
 import HueSliderDialog from 'src/components/HueSliderDialog.vue'
 import { computed } from 'vue'
 import { useUiStateStore } from 'src/stores/ui-state'
-import ProviderInput from 'src/components/ProviderInput.vue'
 import { modelOptions } from 'src/utils/values'
 import CopyBtn from 'src/components/CopyBtn.vue'
 import AAvatar from 'src/components/AAvatar.vue'
 import PickAvatarDialog from 'src/components/PickAvatarDialog.vue'
 import { useFilterOptions } from 'src/composables/filter-options'
 import ModelItem from 'src/components/ModelItem.vue'
-import ModelInputItem from 'src/components/ModelInputItem.vue'
-import LazyInput from 'src/components/LazyInput.vue'
+import ModelInputItems from 'src/components/ModelInputItems.vue'
 import { useObservable } from '@vueuse/rxjs'
 import { db } from 'src/utils/db'
+import ProviderInputItems from 'src/components/ProviderInputItems.vue'
 
 const uiStateStore = useUiStateStore()
-const { perfs, restore } = useLocalPerfStore()
+const { perfs, restore } = useUserPerfsStore()
 const darkModeOptions = computed(() => [
   { label: '跟随系统', value: 'auto' },
   { label: '浅色', value: false },
