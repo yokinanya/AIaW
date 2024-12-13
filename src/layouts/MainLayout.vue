@@ -101,11 +101,6 @@
                   href="https://docs.aiaw.app/usage/"
                   target="_blank"
                 />
-                <menu-item
-                  icon="sym_o_info"
-                  label="关于"
-                  to="/about"
-                />
                 <q-item
                   clickable
                   v-close-popup

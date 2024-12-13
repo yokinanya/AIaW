@@ -337,7 +337,7 @@ import { useSystemModel } from 'src/composables/system-model'
 import { ActionMessage, GenDialogTitle, PluginsPrompt } from 'src/utils/templates'
 import sessions from 'src/utils/sessions'
 import PromptVarInput from 'src/components/PromptVarInput.vue'
-import { MessageContent, PluginApi, ApiCallError, Plugin, Dialog, Message, Workspace, UserMessageContent, StoredItem, ModelSettings } from 'src/utils/types'
+import { MessageContent, PluginApi, ApiCallError, Plugin, Dialog, Message, Workspace, UserMessageContent, StoredItem, ModelSettings, ApiResultItem } from 'src/utils/types'
 import { usePluginsStore } from 'src/stores/plugins'
 import { UpdateSpec } from 'dexie'
 import MessageItem from 'src/components/MessageItem.vue'
@@ -572,8 +572,8 @@ async function parseFiles(files: File[]) {
   otherFiles.length && $q.dialog({
     component: ParseFilesDialog,
     componentProps: { files: otherFiles, plugins: assistant.value.plugins }
-  }).onOk(files => {
-    addInputItems(files)
+  }).onOk((files: ApiResultItem[]) => {
+    addInputItems(files.map(i => ({ ...i, id: genId(), dialogId: props.id, references: 0 })))
   })
 }
 async function addInputItems(items: StoredItem[]) {

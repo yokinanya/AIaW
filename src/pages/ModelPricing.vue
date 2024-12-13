@@ -139,6 +139,11 @@
         </div>
       </div>
     </q-page>
+    <q-page v-else>
+      <q-inner-loading
+        showing
+      />
+    </q-page>
   </q-page-container>
 </template>
 

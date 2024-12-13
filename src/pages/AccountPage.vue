@@ -100,7 +100,10 @@
         </q-item-label>
         <q-item>
           <q-item-section>
-            <q-item-label caption>
+            <q-item-label
+              caption
+              important:lh="1.5em"
+            >
               一站式地使用不同服务商的各种先进模型，包括 gpt-4o、claude-3-5-sonnet、o1-mini 等，无需配置。额度随用随充，永久有效。按照官方API原价扣费（按USD/CNY=7计算）。<router-link
                 to="/model-pricing"
                 pri-link
