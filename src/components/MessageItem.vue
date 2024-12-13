@@ -158,6 +158,30 @@
           title="修改"
           @click="$emit('edit')"
         />
+        <q-btn
+          icon="sym_o_more_vert"
+          round
+          flat
+          dense
+          ml-1
+          title="更多"
+        >
+          <q-menu>
+            <q-list>
+              <menu-item
+                icon="sym_o_code"
+                label="显示源代码"
+                @click="sourceCodeMode = !sourceCodeMode"
+                :class="{ 'route-active': sourceCodeMode }"
+              />
+              <menu-item
+                icon="sym_o_info"
+                label="更多信息"
+                @click="moreInfo"
+              />
+            </q-list>
+          </q-menu>
+        </q-btn>
       </div>
       <q-pagination
         v-if="childNum > 1"
@@ -193,15 +217,34 @@ import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import PickAvatarDialog from './PickAvatarDialog.vue'
 import MessageFile from './MessageFile.vue'
-import { genId } from 'src/utils/functions'
+import { genId, wrapCode } from 'src/utils/functions'
+import MenuItem from './MenuItem.vue'
+import MessageInfoDialog from './MessageInfoDialog.vue'
 
 const props = defineProps<{
   message: Message,
   childNum: number
 }>()
 
-// Vue 3.4 computed is lazy. Force it to trigger.
-const contents = computed(() => props.message.contents.map(x => ({ ...x })))
+const $q = useQuasar()
+function moreInfo() {
+  $q.dialog({
+    component: MessageInfoDialog,
+    componentProps: { message: props.message }
+  })
+}
+const sourceCodeMode = ref(false)
+
+const contents = computed(() => props.message.contents.map(x => {
+  if (x.type === 'assistant-message' || x.type === 'user-message') {
+    return {
+      ...x,
+      text: sourceCodeMode.value ? wrapCode(x.text, 'markdown') : x.text
+    }
+  }
+  // Vue 3.4 computed is lazy. Force it to trigger.
+  return { ...x }
+}))
 
 const model = defineModel<number>()
 
@@ -265,7 +308,6 @@ async function updateContent(index, value) {
   })
 }
 
-const $q = useQuasar()
 const colMode = computed(() => $q.screen.lt.md && props.message.type === 'assistant')
 
 const router = useRouter()

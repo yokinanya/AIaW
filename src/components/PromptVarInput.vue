@@ -5,6 +5,7 @@
     :options="promptVar.options"
     :label="promptVar.label || promptVar.name"
     v-model="model"
+    :input-props
     :component
   />
 </template>
@@ -16,6 +17,7 @@ import UnifiedInput from './UnifiedInput.vue'
 const props = defineProps<{
   promptVar: PromptVar
   component: 'input' | 'item'
+  inputProps?: Record<string, any>
 }>()
 
 const model = defineModel<PromptVarValue>()

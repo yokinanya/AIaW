@@ -16,6 +16,7 @@ import PluginsMarket from 'src/views/PluginsMarket.vue'
 import PluginSettings from 'src/views/PluginSettings.vue'
 import AssistantsMarket from 'src/views/AssistantsMarket.vue'
 import AccountPage from 'src/pages/AccountPage.vue'
+import ModelPricing from 'src/pages/ModelPricing.vue'
 
 const routes: RouteRecordRaw[] = [
   {
@@ -63,6 +64,7 @@ const routes: RouteRecordRaw[] = [
       { path: '/assistants', component: AssistantsPage },
       { path: '/set-provider', component: SetProvider },
       { path: '/account', component: AccountPage },
+      { path: '/model-pricing', component: ModelPricing },
       { path: '/', component: EmptyPage },
 
       // Always leave this as last one,

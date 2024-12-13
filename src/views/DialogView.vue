@@ -296,9 +296,11 @@
             v-for="promptVar of assistant.promptVars"
             :key="promptVar.id"
             :prompt-var="promptVar"
-            v-model="vars[promptVar.name]"
-            outlined
-            dense
+            v-model="dialog.inputVars[promptVar.name]"
+            :input-props="{
+              dense: true,
+              outlined: true
+            }"
             component="input"
           />
         </div>
@@ -322,7 +324,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, inject, onUnmounted, provide, reactive, ref, Ref, toRaw, watch } from 'vue'
+import { computed, inject, onUnmounted, provide, ref, Ref, toRaw, watch } from 'vue'
 import { db } from 'src/utils/db'
 import { useLiveQueryWithDeps } from 'src/composables/live-query'
 import { escapeRegex, genId, isTextFile, mimeTypeMatch, wrapCode } from 'src/utils/functions'
@@ -672,16 +674,22 @@ function getChainMessages() {
 }
 
 function getSystemPrompt(enabledPlugins) {
-  const prompt = engine.parseAndRenderSync(assistant.value.promptTemplate, {
-    ...getCommonVars(),
-    ...workspace.value.vars,
-    ...vars,
-    _pluginsPrompt: enabledPlugins.length
-      ? engine.parseAndRenderSync(PluginsPrompt, { plugins: enabledPlugins })
-      : '',
-    _rolePrompt: assistant.value.prompt
-  })
-  return prompt.trim() ? prompt : undefined
+  try {
+    const prompt = engine.parseAndRenderSync(assistant.value.promptTemplate, {
+      ...getCommonVars(),
+      ...workspace.value.vars,
+      ...dialog.value.inputVars,
+      _pluginsPrompt: enabledPlugins.length
+        ? engine.parseAndRenderSync(PluginsPrompt, { plugins: enabledPlugins })
+        : '',
+      _rolePrompt: assistant.value.prompt
+    })
+    return prompt.trim() ? prompt : undefined
+  } catch (e) {
+    console.error(e)
+    $q.notify({ message: '提示词解析失败，请检查助手提示词模板', color: 'negative' })
+    throw e
+  }
 }
 
 function getCommonVars() {
@@ -712,7 +720,7 @@ async function send() {
     return
   }
   if (!sdkModel.value) {
-    $q.notify({ message: '请配置服务商和模型', color: 'negative' })
+    $q.notify({ message: '请配置服务商、模型或者登录', color: 'negative' })
     return
   }
   if (!data.noobAlertDismissed && chain.value.length > 10 && dialogs.value.length < 3) {
@@ -762,7 +770,8 @@ async function stream(target, insert = false) {
       assistantId: assistant.value.id,
       contents,
       status: 'pending',
-      generatingSession: sessions.id
+      generatingSession: sessions.id,
+      modelName: model.value.name
     }, insert)
     !insert && await appendMessage(id, {
       type: 'user',
@@ -860,11 +869,15 @@ async function stream(target, insert = false) {
         prompt: engine.parseAndRenderSync(prompt, pluginVars)
       })
     })
-    enabledPlugins.push({
-      id: p.id,
-      prompt: p.prompt && engine.parseAndRenderSync(p.prompt, { ...pluginVars, infos: pluginInfos }),
-      actions: pluginActions
-    })
+    try {
+      enabledPlugins.push({
+        id: p.id,
+        prompt: p.prompt && engine.parseAndRenderSync(p.prompt, { ...pluginVars, infos: pluginInfos }),
+        actions: pluginActions
+      })
+    } catch (e) {
+      $q.notify({ message: `插件「${p.title}」提示词模板解析失败`, color: 'negative' })
+    }
   }))
 
   try {
@@ -947,6 +960,7 @@ async function stream(target, insert = false) {
     const warnings = (await result.warnings).map(w => (w.type === 'unsupported-setting' || w.type === 'unsupported-tool') ? w.details : w.message)
     await db.messages.update(id, { contents, status: 'default', generatingSession: null, warnings, usage })
   } catch (e) {
+    console.error(e)
     if (e.data?.error?.type === 'budget_exceeded') {
       $q.notify({
         message: '模型服务额度不足',
@@ -981,7 +995,7 @@ const route = useRoute()
 const router = useRouter()
 watch(route, to => {
   if (to.hash === '#genTitle') {
-    until(chain).toMatch(val => val.length > 0).then(() => {
+    until(dialog).toMatch(val => val.id === props.id).then(() => {
       genTitle()
       router.replace({ hash: '' })
     })
@@ -997,8 +1011,6 @@ function onEnter(ev) {
     (ev.ctrlKey || ev.shiftKey) ? updateInputText(inputMessageContent.value.text + '\n') : send()
   }
 }
-
-const vars = reactive({})
 
 const showVars = ref(true)
 

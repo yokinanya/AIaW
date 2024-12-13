@@ -391,6 +391,7 @@ interface Message {
   error?: string
   warnings?: string[]
   usage?: LanguageModelUsage
+  modelName?: string
 }
 
 interface Assistant {

@@ -1,6 +1,7 @@
 import { useQuasar } from 'quasar'
 import { db } from 'src/utils/db'
 import { localData } from 'src/utils/local-data'
+import { dialogOptions } from 'src/utils/values'
 import { onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 
@@ -20,7 +21,8 @@ export function useFirstVisit() {
         html: true,
         cancel: '配置服务商',
         persistent: true,
-        ok: '登录'
+        ok: '登录',
+        ...dialogOptions
       }).onCancel(() => {
         router.push('/settings')
         localData.visited = true

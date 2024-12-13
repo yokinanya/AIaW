@@ -13,6 +13,7 @@
           v-model="model[key]"
           filled
           autogrow
+          clearable
         />
       </q-item-section>
       <q-item-section side>
@@ -52,7 +53,7 @@ function add() {
     prompt: {
       model: '',
       type: 'text',
-      title: '变量名'
+      label: '变量名'
     },
     cancel: true,
     ...dialogOptions

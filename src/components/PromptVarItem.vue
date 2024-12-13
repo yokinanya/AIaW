@@ -47,8 +47,10 @@
       <prompt-var-input
         :prompt-var="{ ...model, label: '默认值' }"
         v-model="model.default"
-        filled
-        dense
+        :input-props="{
+          dense: true,
+          filled: true
+        }"
         class="prompt-var-input-item"
         component="input"
       />

@@ -6,6 +6,7 @@ hero:
   name: "AI as Workspace"
   text: "新一代 LLM 客户端"
   tagline: AIaW 是全功能、轻量级、可拓展的 AI 客户端
+  image: /ui.webp
   actions:
     - theme: brand
       text: 使用指南

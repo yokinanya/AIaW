@@ -25,7 +25,7 @@ export const useUserPerfsStore = defineStore('user-perfs', () => {
     darkMode: 'auto',
     themeHue: 300,
     provider: null,
-    model: models.find(m => m.name === 'gpt-4o-2024-08-06'),
+    model: models.find(m => m.name === 'gpt-4o'),
     systemProvider: null,
     systemModel: models.find(m => m.name === 'gpt-4o-mini'),
     userAvatar: {

@@ -30,6 +30,9 @@ function genId() {
   const randomHash = (crypto.getRandomValues(new Uint16Array(1))[0] % 0x8000).toString(32).padStart(3, '0')
   return timeHash + countHash + randomHash
 }
+function idTimestamp(id: string) {
+  return parseInt(id.slice(0, 9), 32)
+}
 
 function JSONEqual(a, b) {
   return JSON.stringify(a) === JSON.stringify(b)
@@ -61,7 +64,7 @@ async function isTextFile(file: Blob) {
 }
 
 function wrapCode(code: string, lang = '') {
-  return '```' + lang + '\n' + code + '\n```'
+  return '`````' + lang + '\n' + code + '\n`````'
 }
 
 function wrapQuote(text: string) {
@@ -95,4 +98,4 @@ function parsePageRange(range: string) {
   }).flat().map(p => p - 1)
 }
 
-export { randomHash, escapeRegex, defaultAvatar, hctToHex, genId, JSONEqual, mimeTypeMatch, isTextFile, wrapCode, wrapQuote, parseSeconds, caselessIncludes, displayLength, parsePageRange }
+export { randomHash, escapeRegex, defaultAvatar, hctToHex, genId, idTimestamp, JSONEqual, mimeTypeMatch, isTextFile, wrapCode, wrapQuote, parseSeconds, caselessIncludes, displayLength, parsePageRange }

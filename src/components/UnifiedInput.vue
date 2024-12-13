@@ -8,6 +8,7 @@
     :hint="description"
     :input-props
     v-model="model"
+    class="min-w-120px"
   />
   <q-item v-else-if="component === 'item'">
     <q-item-section>

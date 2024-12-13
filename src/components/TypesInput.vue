@@ -64,6 +64,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import LazyInput from './LazyInput.vue'
+import { QInput } from 'quasar'
 
 const props = defineProps<{
   type: 'string' | 'array' | 'number' | 'boolean'
@@ -74,5 +75,9 @@ const props = defineProps<{
 }>()
 const model = defineModel<any>()
 
-const inputComponent = computed(() => props.lazy ? LazyInput : 'q-input')
+if (props.type === 'array' && !model.value) {
+  model.value = []
+}
+
+const inputComponent = computed(() => props.lazy ? LazyInput : QInput)
 </script>

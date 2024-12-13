@@ -203,6 +203,10 @@ body .vuepress-theme {
   --md-theme-link-color: var(--a-pri) !important;
   --md-theme-link-hover-color: var(--a-pri-dim) !important;
 
+  h1 {
+    font-size: 2em;
+  }
+
   p {
     margin: 1em 0;
   }
