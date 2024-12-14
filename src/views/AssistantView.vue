@@ -11,12 +11,9 @@
   >
     <q-page
       pb-2
-      of-y-auto
       bg-sur
       :class="{ 'rd-rt-lg': rightDrawerAbove }"
-      :style-fn="(offset, height) => ({
-        height: `${height - offset}px`
-      })"
+      :style-fn="pageFhStyle"
     >
       <q-list>
         <q-item-label
@@ -365,6 +362,7 @@ import ModelInputItems from 'src/components/ModelInputItems.vue'
 import ErrorNotFound from 'src/pages/ErrorNotFound.vue'
 import PluginTypeBadge from 'src/components/PluginTypeBadge.vue'
 import { useLocateId } from 'src/composables/locate-id'
+import { pageFhStyle } from 'src/utils/functions'
 
 const props = defineProps<{
   id: string

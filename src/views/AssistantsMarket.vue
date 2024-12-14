@@ -6,7 +6,10 @@
     <q-space />
   </view-common-header>
   <q-page-container>
-    <q-page p-2>
+    <q-page
+      p-2
+      :style-fn="pageFhStyle"
+    >
       <div>
         <q-input
           label="搜索"
@@ -78,7 +81,7 @@ import ViewCommonHeader from 'src/components/ViewCommonHeader.vue'
 import { useQuasar } from 'quasar'
 import { MarketAssistantSchema } from 'src/utils/types'
 import { Validator } from '@cfworker/json-schema'
-import { caselessIncludes } from 'src/utils/functions'
+import { caselessIncludes, pageFhStyle } from 'src/utils/functions'
 import AAvatar from 'src/components/AAvatar.vue'
 import { useAssistantsStore } from 'src/stores/assistants'
 import { AssistantDefaultPrompt } from 'src/utils/templates'

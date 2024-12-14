@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="!dismissed"
-    class="bg-ter-c text-on-ter-c n-tip py-2 px-4 rd"
+    class="bg-ter-c text-on-ter-c n-tip py-2 px-3 rd"
     :class="{ float, 'shadow-1': float, dense }"
   >
     <template v-if="dense">

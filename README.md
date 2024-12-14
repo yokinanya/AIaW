@@ -10,17 +10,17 @@ AIaW 是新一代 LLM 客户端，全功能、轻量级、可拓展。
 
 - 流式传输、上传图片、latex公式…… 这些基本的功能自然都有，无需多提
 
-- [跨平台](https://docs.aiaw.app/usage/cross-platform)：响应式界面设计，适配手机、电脑等不同大小和比例的屏幕
+- [跨平台](https://docs.aiaw.app/usage/cross-platform.html)：响应式界面设计，适配手机、电脑等不同大小和比例的屏幕
 
 - 多服务商支持：支持 OpenAI、Anthropic、Google 等不同服务商
 
 - 修改提问、重新生成 以分叉的形式实现，像 Chatgpt 官网那样（整个对话呈现“树”的结构）
 
-- [文件解析](https://docs.aiaw.app/usage/file-parse)：支持上传 Word、PDF、PPT、Excel等格式文档，自动解析为文本输入
+- [文件解析](https://docs.aiaw.app/usage/file-parse.html)：支持上传 Word、PDF、PPT、Excel等格式文档，自动解析为文本输入
 
 - 视频解析：支持选择视频文件并指定时长范围，将自动转稿为文本输入，以此实现对视频内容的提问
 
-- [插件系统](https://docs.aiaw.app/usage/plugins)：内置了计算器、图像生成等插件。此外可在插件商店安装更多插件
+- [插件系统](https://docs.aiaw.app/usage/plugins.html)：内置了计算器、图像生成等插件。此外可在插件商店安装更多插件
 
 - 助手市场：获取各种各样定制提示词的助手（提示词来自[lobe-chat-agents](https://github.com/lobehub/lobe-chat-agents)）
 
@@ -32,9 +32,9 @@ AIaW 是新一代 LLM 客户端，全功能、轻量级、可拓展。
 
 ## 拓展使用
 
-- [多工作区](https://docs.aiaw.app/usage/workspaces)：在左侧边栏，你可以创建多个工作区，将不同主题的对话、不同类型的助手分隔开；还可以创建文件夹，将多个工作区放入其中；支持嵌套
+- [多工作区](https://docs.aiaw.app/usage/workspaces.html)：在左侧边栏，你可以创建多个工作区，将不同主题的对话、不同类型的助手分隔开；还可以创建文件夹，将多个工作区放入其中；支持嵌套
 
-- [提示词变量](https://docs.aiaw.app/usage/prompt-vars)：除了在助手的“角色设定”中设置普通的静态提示词外，你可以通过创建提示词变量、编辑提示词模板，来构建动态且可复用的提示词
+- [提示词变量](https://docs.aiaw.app/usage/prompt-vars.html)：除了在助手的“角色设定”中设置普通的静态提示词外，你可以通过创建提示词变量、编辑提示词模板，来构建动态且可复用的提示词
 
 - 插件拓展性：支持将任意 Gradio 应用配置为插件，同时兼容部分 LobeChat 插件；插件不仅仅提供工具调用，文件解析功能也可以通过插件拓展；工具调用支持多模态的结果
 

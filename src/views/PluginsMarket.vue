@@ -43,7 +43,10 @@
     </q-btn>
   </view-common-header>
   <q-page-container>
-    <q-page p-2>
+    <q-page
+      p-2
+      :style-fn="pageFhStyle"
+    >
       <a-tip
         v-if="$q.screen.xs"
         tip-key="plugins-market-right-drawer"
@@ -102,7 +105,7 @@ import { useQuasar } from 'quasar'
 import { GradioPluginManifestSchema, HuggingPluginManifestSchema, LobePluginManifestSchema } from 'src/utils/types'
 import { Validator } from '@cfworker/json-schema'
 import { usePluginsStore } from 'src/stores/plugins'
-import { caselessIncludes } from 'src/utils/functions'
+import { caselessIncludes, pageFhStyle } from 'src/utils/functions'
 import AAvatar from 'src/components/AAvatar.vue'
 import ATip from 'src/components/ATip.vue'
 import PluginTypeBadge from 'src/components/PluginTypeBadge.vue'

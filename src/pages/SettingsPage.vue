@@ -17,13 +17,16 @@
     </q-toolbar>
   </q-header>
   <q-page-container>
-    <q-page
-      pb-2
-      max-w="1000px"
-      mx-a
-    >
-      <q-list>
-        <q-item-label header>
+    <q-page :style-fn="pageFhStyle">
+      <q-list
+        pb-2
+        max-w="1000px"
+        mx-a
+      >
+        <q-item-label
+          header
+          id="custom-provider"
+        >
           自定义服务商
         </q-item-label>
         <provider-input-items v-model="perfs.provider" />
@@ -57,12 +60,18 @@
           </router-link>页面
         </q-item-label>
         <q-separator spaced />
-        <q-item-label header>
+        <q-item-label
+          header
+          id="default-model"
+        >
           默认模型
         </q-item-label>
         <model-input-items v-model="perfs.model" />
         <q-separator spaced />
-        <q-item-label header>
+        <q-item-label
+          header
+          id="system-assistant"
+        >
           系统助手
         </q-item-label>
         <provider-input-items v-model="perfs.systemProvider" />
@@ -86,7 +95,10 @@
           用于总结对话标题。如果留空，则使用默认服务商设置
         </q-item-label>
         <q-separator spaced />
-        <q-item-label header>
+        <q-item-label
+          header
+          id="operation"
+        >
           操作
         </q-item-label>
         <q-item>
@@ -130,7 +142,10 @@
           </q-item-section>
         </q-item>
         <q-separator spaced />
-        <q-item-label header>
+        <q-item-label
+          header
+          id="ui"
+        >
           界面
         </q-item-label>
         <q-item>
@@ -246,7 +261,7 @@ import { useQuasar } from 'quasar'
 import { useUserPerfsStore } from 'src/stores/user-perfs'
 import HctPreviewCircle from 'src/components/HctPreviewCircle.vue'
 import HueSliderDialog from 'src/components/HueSliderDialog.vue'
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
 import { useUiStateStore } from 'src/stores/ui-state'
 import { modelOptions } from 'src/utils/values'
 import CopyBtn from 'src/components/CopyBtn.vue'
@@ -258,6 +273,8 @@ import ModelInputItems from 'src/components/ModelInputItems.vue'
 import { useObservable } from '@vueuse/rxjs'
 import { db } from 'src/utils/db'
 import ProviderInputItems from 'src/components/ProviderInputItems.vue'
+import { useLocateId } from 'src/composables/locate-id'
+import { pageFhStyle } from 'src/utils/functions'
 
 const uiStateStore = useUiStateStore()
 const { perfs, restore } = useUserPerfsStore()
@@ -293,4 +310,6 @@ const providerLink = computed(() => {
 })
 const user = useObservable(db.cloud.currentUser)
 const { filteredOptions, filterFn } = useFilterOptions(modelOptions)
+
+useLocateId(ref(true))
 </script>

@@ -82,6 +82,18 @@
           >
             常用模型
           </q-item-label>
+          <a-tip
+            tip-key="configure-common-models"
+            dense
+            rd-0
+          >
+            可以在 <router-link
+              to="/settings#ui"
+              pri-link
+            >
+              设置
+            </router-link> 中配置 常用模型
+          </a-tip>
           <model-item
             v-for="m of perfs.commonModelOptions"
             :key="m"
@@ -103,7 +115,7 @@
     <q-page
       flex
       flex-col
-      :style-fn="(offset, height) => ({ height: height - offset + 'px' })"
+      :style-fn="pageFhStyle"
     >
       <div
         grow
@@ -128,6 +140,7 @@
             @edit="edit(index)"
             @regenerate="regenerate(index)"
             @quote="addInputItems([$event])"
+            pt-2
             mb-4
           />
         </template>
@@ -327,7 +340,7 @@
 import { computed, inject, onUnmounted, provide, ref, Ref, toRaw, watch } from 'vue'
 import { db } from 'src/utils/db'
 import { useLiveQueryWithDeps } from 'src/composables/live-query'
-import { escapeRegex, genId, isTextFile, mimeTypeMatch, wrapCode } from 'src/utils/functions'
+import { escapeRegex, genId, isTextFile, mimeTypeMatch, pageFhStyle, wrapCode } from 'src/utils/functions'
 import { useAssistantsStore } from 'src/stores/assistants'
 import { streamText, CoreMessage, generateText, tool, jsonSchema } from 'ai'
 import { useModel } from 'src/composables/model'
@@ -358,6 +371,7 @@ import ErrorNotFound from 'src/pages/ErrorNotFound.vue'
 import { useRoute, useRouter } from 'vue-router'
 import AbortableBtn from 'src/components/AbortableBtn.vue'
 import { MaxMessageFileSizeMB } from 'src/utils/config'
+import ATip from 'src/components/ATip.vue'
 
 const props = defineProps<{
   id: string

@@ -98,4 +98,9 @@ function parsePageRange(range: string) {
   }).flat().map(p => p - 1)
 }
 
-export { randomHash, escapeRegex, defaultAvatar, hctToHex, genId, idTimestamp, JSONEqual, mimeTypeMatch, isTextFile, wrapCode, wrapQuote, parseSeconds, caselessIncludes, displayLength, parsePageRange }
+const pageFhStyle = (offset: number, height: number) => ({
+  height: `${height - offset}px`,
+  overflowY: 'auto'
+})
+
+export { randomHash, escapeRegex, defaultAvatar, hctToHex, genId, idTimestamp, JSONEqual, mimeTypeMatch, isTextFile, wrapCode, wrapQuote, parseSeconds, caselessIncludes, displayLength, parsePageRange, pageFhStyle }

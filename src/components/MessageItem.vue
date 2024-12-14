@@ -5,19 +5,22 @@
   >
     <div
       flex
-      :class="colMode ? 'flex-row items-center' : 'flex-col'"
+      :class="[
+        colMode ? 'flex-row items-center' : 'flex-col',
+        message.type === 'assistant' ? 'pl-2' : ''
+      ]"
     >
       <a-avatar
         v-if="avatar"
         :avatar
         :size="colMode ? '36px' : '48px'"
-        :class="colMode ? 'mx-2' : 'mx-4'"
+        :class="colMode ? 'mx-2' : 'xs:mx-3 sm:mx-4'"
         @click="onAvatarClick"
         cursor-pointer
       />
       <div
         v-if="name"
-        :class="colMode ? 'mx-2' : 'm-2 text-xs'"
+        :class="colMode ? 'mx-2' : 'my-2 text-xs'"
         text="center on-sur-var"
       >
         {{ name }}
@@ -130,7 +133,7 @@
       <div
         v-if="['default', 'failed'].includes(message.status)"
         text-on-sur-var
-        mt-1
+        :class="message.type === 'assistant' ? 'ml-4' : 'm-1'"
       >
         <copy-btn
           round

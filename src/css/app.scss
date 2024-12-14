@@ -217,6 +217,10 @@ body .vuepress-theme {
   }
 }
 
+#md-editor-v-2-preview-wrapper {
+  --at-apply: 'xs:px-4 sm:px-5';
+}
+
 .md-editor-dark .vuepress-theme {
   --md-theme-color: var(--a-on-sur-var) !important;
   --md-theme-heading-color: var(--a-on-sur-var) !important;

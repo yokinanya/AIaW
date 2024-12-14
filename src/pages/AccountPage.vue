@@ -17,13 +17,13 @@
     </q-toolbar>
   </q-header>
   <q-page-container>
-    <q-page
-      pb-2
-      v-if="user.license"
-      max-w="1000px"
-      mx-a
-    >
-      <q-list>
+    <q-page :style-fn="pageFhStyle">
+      <q-list
+        pb-2
+        v-if="user.license"
+        max-w="1000px"
+        mx-a
+      >
         <q-item-label header>
           信息
         </q-item-label>
@@ -158,6 +158,18 @@
             v-if="user.data.orderHistory?.length"
           />
         </template>
+
+        <q-item-label
+          caption
+          p="x-4 y-2"
+        >
+          若订单遇到异常，请联系开发者，Email：<a
+            href="mailto:i@krytro.com"
+            pri-link
+          >
+            i@krytro.com
+          </a>
+        </q-item-label>
         <q-separator spaced />
         <q-item
           clickable
@@ -188,6 +200,7 @@ import TopupDialog from 'src/components/TopupDialog.vue'
 import { useRouter } from 'vue-router'
 import PayDialog from 'src/components/PayDialog.vue'
 import { useUserPerfsStore } from 'src/stores/user-perfs'
+import { pageFhStyle } from 'src/utils/functions'
 
 const user = useObservable(db.cloud.currentUser)
 const router = useRouter()
