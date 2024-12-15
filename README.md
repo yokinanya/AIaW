@@ -50,6 +50,14 @@ AIaW 是新一代 LLM 客户端，全功能、轻量级、可拓展。
 
 [网站链接](https://aiaw.app) - [使用文档](https://docs.aiaw.app/)
 
+## Roadmap
+
+- [ ] 补全文档
+
+- [ ] Docker 自部署
+
+- [ ] i18n
+
 ## Install the dependencies
 ```bash
 pnpm i
