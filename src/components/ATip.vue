@@ -47,10 +47,10 @@ const props = defineProps<{
   long?: boolean
 }>()
 
-const { data } = useUserDataStore()
-const dismissed = data.tipDismissed[props.tipKey]
+const store = useUserDataStore()
+const dismissed = computed(() => !store.ready || store.data.tipDismissed[props.tipKey])
 function dismiss() {
-  data.tipDismissed[props.tipKey] = true
+  store.data.tipDismissed[props.tipKey] = true
 }
 const dense = computed(() => Screen.xs && props.long)
 </script>
