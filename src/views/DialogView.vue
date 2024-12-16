@@ -1022,7 +1022,8 @@ function onEnter(ev) {
   } else if (perfs.sendKey === 'shift+enter') {
     ev.shiftKey && send()
   } else {
-    (ev.ctrlKey || ev.shiftKey) ? updateInputText(inputMessageContent.value.text + '\n') : send()
+    if (ev.ctrlKey) document.execCommand('insertText', false, '\n')
+    else if (!ev.shiftKey) send()
   }
 }
 
