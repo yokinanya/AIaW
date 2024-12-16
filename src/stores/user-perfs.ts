@@ -48,7 +48,7 @@ export const useUserPerfsStore = defineStore('user-perfs', () => {
     messageQuoteBtn: true,
     codePasteOptimize: true
   }
-  const [perfs, ready] = persistentReactive('#user-perfs', defaultPerfs)
+  const [perfs, ready] = persistentReactive('#user-perfs', { ...defaultPerfs })
   watchEffect(() => {
     Dark.set(perfs.darkMode)
   })
