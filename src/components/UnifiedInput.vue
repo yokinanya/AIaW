@@ -33,7 +33,10 @@
           filled: true,
           ...inputProps
         }"
-        class="xs:w-150px sm:w-250px"
+        :class="{
+          'xs:w-200px sm:w-250px': ['string', 'array'].includes(type),
+          'xs:w-100px sm:w-150px': type === 'number'
+        }"
       />
     </q-item-section>
   </q-item>

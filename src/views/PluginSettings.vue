@@ -86,6 +86,7 @@
           :schema="plugin.settings"
           v-model="data[id].settings"
           component="item"
+          lazy
         />
       </q-list>
     </q-page>

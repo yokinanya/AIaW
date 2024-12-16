@@ -47,9 +47,9 @@
     :is="inputComponent"
     v-else-if="type === 'number'"
     v-model.number="model"
-    type="number"
     :label
     v-bind="inputProps"
+    type="number"
     :class="$attrs.class"
   />
   <q-toggle
