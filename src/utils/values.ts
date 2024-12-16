@@ -21,6 +21,7 @@ const ProviderTypes: ProviderType[] = [
     avatar: { type: 'svg', name: 'openai' },
     settings: Object({
       ...commonSettings,
+      baseURL: String({ title: 'API 地址', description: '默认为 OpenAI 官方地址', default: 'https://api.openai.com/v1' }),
       organization: String({ title: '组织', description: 'OpenAI 组织；可选' }),
       project: String({ title: '项目', description: 'OpenAI 项目；可选' })
     }),
@@ -43,7 +44,10 @@ const ProviderTypes: ProviderType[] = [
     name: 'anthropic',
     label: 'Anthropic',
     avatar: { type: 'svg', name: 'anthropic' },
-    settings: Object(commonSettings),
+    settings: Object({
+      ...commonSettings,
+      baseURL: String({ title: 'API 地址', description: '默认为 Anthropic 官方地址', default: 'https://api.anthropic.com/v1' })
+    }),
     initialSettings: {},
     constructor: createAnthropic
   },
@@ -51,7 +55,10 @@ const ProviderTypes: ProviderType[] = [
     name: 'google',
     label: 'Google',
     avatar: { type: 'svg', name: 'google-c' },
-    settings: Object(commonSettings),
+    settings: Object({
+      ...commonSettings,
+      baseURL: String({ title: 'API 地址', description: '默认为 Google 官方地址', default: 'https://generativelanguage.googleapis.com/v1beta' })
+    }),
     initialSettings: {},
     constructor: createGoogleGenerativeAI
   },

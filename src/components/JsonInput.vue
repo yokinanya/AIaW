@@ -23,6 +23,7 @@
       v-model="model[key] as any"
       :input-props="{
         type: sch.format === 'password' ? 'password' : undefined,
+        placeholder: sch.default,
         ...inputProps
       }"
     />
