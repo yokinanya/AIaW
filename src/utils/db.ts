@@ -11,7 +11,7 @@ type Db = Dexie & {
   messages: DexieCloudTable<Message, 'id'>
   assistants: DexieCloudTable<Assistant, 'id'>
   canvases: DexieCloudTable<Canvas, 'id'>
-  installedPlugins: DexieCloudTable<InstalledPlugin, 'id'>
+  installedPluginsV2: DexieCloudTable<InstalledPlugin, 'id'>
   reactives: DexieCloudTable<StoredReactive, 'key'>
   avatarImages: DexieCloudTable<AvatarImage, 'id'>
   items: DexieCloudTable<StoredItem, 'id'>
@@ -25,13 +25,13 @@ db.cloud.configure({
   customLoginGui: true,
   nameSuffix: false
 })
-db.version(3).stores({
+db.version(4).stores({
   workspaces: 'id, type, parentId',
   dialogs: 'id, workspaceId',
   messages: 'id, type, dialogId',
   assistants: 'id, workspaceId',
   canvases: 'id, workspaceId',
-  installedPlugins: 'id',
+  installedPluginsV2: 'key, id',
   reactives: 'key',
   avatarImages: 'id',
   items: 'id, type, dialogId'

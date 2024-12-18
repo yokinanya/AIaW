@@ -6,9 +6,10 @@ import { db } from 'src/utils/db'
 import { GradioPluginManifest, HuggingPluginManifest, InstalledPlugin, PluginsData } from 'src/utils/types'
 import { buildLobePlugin, timePlugin, defaultData, whisperPlugin, videoTranscriptPlugin, buildGradioPlugin, calculatorPlugin, huggingToGradio, fluxPlugin, lobeDefaultData, gradioDefaultData, emotionsPlugin, docParsePlugin } from 'src/utils/plugins'
 import { computed } from 'vue'
+import { genId } from 'src/utils/functions'
 
 export const usePluginsStore = defineStore('plugins', () => {
-  const installed = useLiveQuery(() => db.installedPlugins.toArray(), {
+  const installed = useLiveQuery(() => db.installedPluginsV2.toArray(), {
     initialValue: [] as InstalledPlugin[]
   })
   const availableIds = computed(() => installed.value.filter(i => i.available).map(i => i.id))
@@ -29,10 +30,11 @@ export const usePluginsStore = defineStore('plugins', () => {
 
   async function installLobePlugin(manifest: LobeChatPluginManifest) {
     // @ts-expect-error - Dexie transaction doesn't support recursive type inference (LobeChatPluginManifest)
-    await db.transaction('rw', db.installedPlugins, db.reactives, async () => {
+    await db.transaction('rw', db.installedPluginsV2, db.reactives, async () => {
       const id = `lobe-${manifest.identifier}`
-      await db.installedPlugins.put({
+      await db.installedPluginsV2.put({
         id,
+        key: genId(),
         type: 'lobechat',
         available: true,
         manifest
@@ -44,16 +46,17 @@ export const usePluginsStore = defineStore('plugins', () => {
   }
 
   async function installGradioPlugin(manifest: GradioPluginManifest) {
-    await db.transaction('rw', db.installedPlugins, db.reactives, async () => {
-      await db.installedPlugins.put({
+    await db.transaction('rw', db.installedPluginsV2, db.reactives, async () => {
+      await db.installedPluginsV2.put({
         id: manifest.id,
+        key: genId(),
         type: 'gradio',
         available: true,
         manifest
       })
-    })
-    await db.reactives.update('#plugins-data', {
-      [`value.${manifest.id}`]: gradioDefaultData(manifest)
+      await db.reactives.update('#plugins-data', {
+        [`value.${manifest.id}`]: gradioDefaultData(manifest)
+      })
     })
   }
 
@@ -61,9 +64,9 @@ export const usePluginsStore = defineStore('plugins', () => {
     await installGradioPlugin(huggingToGradio(manifest))
   }
 
-  async function uninstall(id: string) {
-    await db.transaction('rw', db.installedPlugins, db.assistants, async () => {
-      await db.installedPlugins.update(id, { available: false })
+  async function uninstall(id) {
+    await db.transaction('rw', db.installedPluginsV2, db.assistants, async () => {
+      await db.installedPluginsV2.where('id').equals(id).modify({ available: false })
       await db.assistants.filter(a => !!a.plugins[id]).modify({ [`plugins.${id}`]: undefined })
     })
   }

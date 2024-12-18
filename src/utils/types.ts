@@ -196,6 +196,7 @@ interface Plugin {
 
 interface InstalledLobePlugin {
   id: string
+  key: string
   type: 'lobechat'
   available: boolean
   manifest: LobeChatPluginManifest
@@ -324,6 +325,7 @@ const LobePluginManifestSchema = Object({
 type HuggingPluginManifest = Static<typeof HuggingPluginManifestSchema>
 interface InstalledGradioPlugin {
   id: string
+  key: string
   type: 'gradio'
   available: boolean
   manifest: GradioPluginManifest
