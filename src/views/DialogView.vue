@@ -554,13 +554,10 @@ async function parseFiles(files: File[]) {
     else otherFiles.push(file)
   }
 
-  const parsedFiles: StoredItem[] = []
+  const parsedFiles: ApiResultItem[] = []
   for (const file of textFiles) {
     parsedFiles.push({
-      id: genId(),
       type: 'text',
-      dialogId: props.id,
-      references: 0,
       name: file.name,
       contentText: await file.text()
     })
@@ -572,10 +569,7 @@ async function parseFiles(files: File[]) {
     }
     const f = file.type.startsWith('image/') && file.size > 512 * 1024 ? await scaleBlob(file, 2048 * 2048) : file
     parsedFiles.push({
-      id: genId(),
       type: 'file',
-      dialogId: props.id,
-      references: 0,
       name: file.name,
       mimeType: file.type,
       contentBuffer: await f.arrayBuffer()
@@ -587,11 +581,12 @@ async function parseFiles(files: File[]) {
     component: ParseFilesDialog,
     componentProps: { files: otherFiles, plugins: assistant.value.plugins }
   }).onOk((files: ApiResultItem[]) => {
-    addInputItems(files.map(i => ({ ...i, id: genId(), dialogId: props.id, references: 0 })))
+    addInputItems(files)
   })
 }
-async function addInputItems(items: StoredItem[]) {
-  const ids = items.map(i => i.id)
+async function addInputItems(items: ApiResultItem[]) {
+  const storedItems = items.map(i => ({ ...i, id: genId(), dialogId: props.id, references: 0 }))
+  const ids = storedItems.map(i => i.id)
   await db.transaction('rw', db.messages, db.items, () => {
     db.messages.update(chain.value.at(-1), {
       // use shallow keyPath to avoid dexie's sync bug
@@ -600,7 +595,7 @@ async function addInputItems(items: StoredItem[]) {
         items: [...inputMessageContent.value.items, ...ids]
       }]
     })
-    saveItems(items)
+    saveItems(storedItems)
   })
 }
 

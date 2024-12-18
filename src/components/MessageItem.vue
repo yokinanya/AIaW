@@ -208,7 +208,7 @@ import { db } from 'src/utils/db'
 import 'md-editor-v3/lib/preview.css'
 import { computed, ComputedRef, inject, onUnmounted, reactive, ref, watchEffect } from 'vue'
 import sessions from 'src/utils/sessions'
-import { MessageContent, Message } from 'src/utils/types'
+import { MessageContent, Message, ApiResultItem } from 'src/utils/types'
 import CopyBtn from './CopyBtn.vue'
 import AAvatar from './AAvatar.vue'
 import { useAssistantsStore } from 'src/stores/assistants'
@@ -220,7 +220,7 @@ import { useQuasar } from 'quasar'
 import { useRouter } from 'vue-router'
 import PickAvatarDialog from './PickAvatarDialog.vue'
 import MessageFile from './MessageFile.vue'
-import { genId, wrapCode } from 'src/utils/functions'
+import { wrapCode } from 'src/utils/functions'
 import MenuItem from './MenuItem.vue'
 import MessageInfoDialog from './MessageInfoDialog.vue'
 
@@ -251,7 +251,11 @@ const contents = computed(() => props.message.contents.map(x => {
 
 const model = defineModel<number>()
 
-const emit = defineEmits(['regenerate', 'edit', 'quote'])
+const emit = defineEmits<{
+  regenerate: []
+  edit: []
+  quote: [ApiResultItem]
+}>()
 
 watchEffect(async () => {
   const sessionId = props.message.generatingSession
@@ -356,7 +360,6 @@ if (perfs.messageQuoteBtn) {
 function quote() {
   const name = props.message.type === 'assistant' ? '助手消息引用' : '用户消息引用'
   emit('quote', {
-    id: genId(),
     type: 'quote',
     name: name + ` (${selectedText.value.length})`,
     contentText: selectedText.value

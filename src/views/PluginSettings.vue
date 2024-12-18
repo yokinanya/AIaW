@@ -24,7 +24,9 @@
           </q-item-section>
         </q-item>
         <q-item>
-          <q-item-section>描述</q-item-section>
+          <q-item-section avatar>
+            描述
+          </q-item-section>
           <q-item-section side>
             {{ plugin.description }}
           </q-item-section>
