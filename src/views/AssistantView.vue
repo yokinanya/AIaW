@@ -79,6 +79,17 @@
             />
           </q-item-section>
         </q-item>
+        <q-item-label
+          caption
+          p="x-4 y-2"
+          text-on-sur-var
+        >
+          可参考提示词变量/模板的<a
+            href="https://docs.aiaw.app/usage/prompt-vars.html"
+            target="_blank"
+            pri-link
+          >使用指南</a>
+        </q-item-label>
         <q-separator spaced />
         <q-item-label
           header

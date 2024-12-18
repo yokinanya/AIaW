@@ -99,7 +99,7 @@
             :key="m"
             clickable
             :model="m"
-            @click="dialog.modelOverride = models.find(model => model.name === m)"
+            @click="dialog.modelOverride = models.find(model => model.name === m) || { name: m, inputTypes: InputTypes.default }"
             :selected="dialog.modelOverride?.name === m"
             v-close-popup
           />
@@ -365,7 +365,7 @@ import { useUserPerfsStore } from 'src/stores/user-perfs'
 import ModelItem from 'src/components/ModelItem.vue'
 import ParseFilesDialog from 'src/components/ParseFilesDialog.vue'
 import MessageFile from 'src/components/MessageFile.vue'
-import { dialogOptions, models } from 'src/utils/values'
+import { dialogOptions, InputTypes, models } from 'src/utils/values'
 import { useUserDataStore } from 'src/stores/user-data'
 import ErrorNotFound from 'src/pages/ErrorNotFound.vue'
 import { useRoute, useRouter } from 'vue-router'

@@ -9,6 +9,7 @@ import { createXai } from '@ai-sdk/xai'
 import { createTogetherAI } from '@ai-sdk/togetherai'
 import { createCohere } from '@ai-sdk/cohere'
 import { createGroq } from '@ai-sdk/groq'
+import { createOllama } from 'ollama-ai-provider'
 
 const commonSettings = {
   baseURL: String({ title: 'API 地址', description: '默认为该服务商官方地址' }),
@@ -101,6 +102,16 @@ const ProviderTypes: ProviderType[] = [
     settings: Object(commonSettings),
     initialSettings: {},
     constructor: createGroq
+  },
+  {
+    name: 'ollama',
+    label: 'Ollama',
+    avatar: { type: 'svg', name: 'ollama' },
+    settings: Object({
+      baseURL: String({ title: 'API 地址', default: 'http://localhost:11434/api' })
+    }),
+    initialSettings: {},
+    constructor: createOllama
   }
 ]
 
@@ -110,7 +121,8 @@ const InputTypes: Record<string, ModelInputTypes> = {
   claudeVision: { user: ['image/*'], assistant: [], tool: ['image/*'] },
   claudePdf: { user: ['image/*', 'application/pdf'], assistant: [], tool: ['image/*'] },
   audioPreview: { user: ['audio/*'], assistant: [], tool: [] },
-  default: { user: ['image/*'], assistant: [], tool: [] }
+  default: { user: ['image/*'], assistant: [], tool: [] },
+  gemini2: { user: ['image/*', 'audio/*'], assistant: [], tool: [] }
 }
 const models: Model[] = [
   { name: 'o1-mini', inputTypes: InputTypes.textOnly },
@@ -135,7 +147,8 @@ const models: Model[] = [
   { name: 'claude-3-sonnet-20240229', inputTypes: InputTypes.claudeVision },
   { name: 'claude-3-haiku-20240307', inputTypes: InputTypes.claudeVision },
   { name: 'gemini-1.5-pro', inputTypes: InputTypes.commonVision },
-  { name: 'gemini-1.5-flash', inputTypes: InputTypes.commonVision }
+  { name: 'gemini-1.5-flash', inputTypes: InputTypes.commonVision },
+  { name: 'gemini-2.0-flash-exp', inputTypes: InputTypes.gemini2 }
 ]
 const modelOptions = models.map(m => m.name)
 const dialogOptions = {

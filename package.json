@@ -44,6 +44,7 @@
     "json-schema": "^0.4.0",
     "liquidjs": "^10.16.7",
     "md-editor-v3": "^5.0.2",
+    "ollama-ai-provider": "^1.1.0",
     "pinia": "^2.2.2",
     "quasar": "^2.16.10",
     "register-service-worker": "^1.7.2",
