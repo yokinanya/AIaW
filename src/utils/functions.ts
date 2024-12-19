@@ -63,8 +63,9 @@ async function isTextFile(file: Blob) {
   return true
 }
 
-function wrapCode(code: string, lang = '') {
-  return '`````' + lang + '\n' + code + '\n`````'
+function wrapCode(code: string, lang = '', backticks = 3) {
+  const mark = '`'.repeat(backticks)
+  return `${mark}${lang}\n${code}\n${mark}`
 }
 
 function wrapQuote(text: string) {

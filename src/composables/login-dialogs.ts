@@ -3,8 +3,10 @@ import { useObservable } from '@vueuse/rxjs'
 import { db } from 'src/utils/db'
 import { watch } from 'vue'
 import { dialogOptions } from 'src/utils/values'
+import { DexieDBURL } from 'src/utils/config'
 
 export function useLoginDialogs() {
+  if (!DexieDBURL) return
   const userInteraction = useObservable(db.cloud.userInteraction)
   const user = useObservable(db.cloud.currentUser)
   const $q = useQuasar()

@@ -242,7 +242,7 @@ const contents = computed(() => props.message.contents.map(x => {
   if (x.type === 'assistant-message' || x.type === 'user-message') {
     return {
       ...x,
-      text: sourceCodeMode.value ? wrapCode(x.text, 'markdown') : x.text
+      text: sourceCodeMode.value ? wrapCode(x.text, 'markdown', 5) : x.text
     }
   }
   // Vue 3.4 computed is lazy. Force it to trigger.

@@ -83,7 +83,18 @@
           text-on-sur-var
         >
           <account-btn
+            v-if="DexieDBURL"
             flat
+          />
+          <q-btn
+            v-else
+            flat
+            dense
+            round
+            icon="sym_o_book_2"
+            title="使用指南"
+            href="https://docs.aiaw.app/usage/"
+            target="_blank"
           />
           <q-space />
           <dark-switch-btn />
@@ -140,6 +151,7 @@ import { useRoute, useRouter } from 'vue-router'
 import AccountBtn from 'src/components/AccountBtn.vue'
 import DarkSwitchBtn from 'src/components/DarkSwitchBtn.vue'
 import MenuItem from 'src/components/MenuItem.vue'
+import { DexieDBURL } from 'src/utils/config'
 
 defineOptions({
   name: 'MainLayout'

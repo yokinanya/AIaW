@@ -50,7 +50,7 @@
           caption
           p="x-4 y-2"
           text-on-sur-var
-          v-if="!perfs.provider && user.isLoggedIn"
+          v-if="!perfs.provider && user?.isLoggedIn && LitellmBaseURL"
         >
           当前未配置自定义服务商，将默认使用我们提供的模型服务。详见<router-link
             pri-link
@@ -275,6 +275,7 @@ import { db } from 'src/utils/db'
 import ProviderInputItems from 'src/components/ProviderInputItems.vue'
 import { useLocateId } from 'src/composables/locate-id'
 import { pageFhStyle } from 'src/utils/functions'
+import { DexieDBURL, LitellmBaseURL } from 'src/utils/config'
 
 const uiStateStore = useUiStateStore()
 const { perfs, restore } = useUserPerfsStore()
@@ -308,7 +309,7 @@ const providerLink = computed(() => {
   const provider = encodeURIComponent(JSON.stringify(perfs.provider))
   return `${location.origin}/set-provider?provider=${provider}`
 })
-const user = useObservable(db.cloud.currentUser)
+const user = DexieDBURL ? useObservable(db.cloud.currentUser) : null
 const { filteredOptions, filterFn } = useFilterOptions(modelOptions)
 
 useLocateId(ref(true))

@@ -17,14 +17,16 @@ type Db = Dexie & {
   items: DexieCloudTable<StoredItem, 'id'>
 }
 
-const db = new Dexie('data', { addons: [dexieCloud] }) as Db
+const db = new Dexie('data', { addons: DexieDBURL ? [dexieCloud] : [] }) as Db
 
-db.cloud.configure({
-  databaseUrl: DexieDBURL,
-  requireAuth: false,
-  customLoginGui: true,
-  nameSuffix: false
-})
+if (DexieDBURL) {
+  db.cloud.configure({
+    databaseUrl: DexieDBURL,
+    requireAuth: false,
+    customLoginGui: true,
+    nameSuffix: false
+  })
+}
 db.version(4).stores({
   workspaces: 'id, type, parentId',
   dialogs: 'id, workspaceId',

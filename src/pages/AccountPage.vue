@@ -42,7 +42,7 @@
         <q-item>
           <q-item-section>
             <q-item-label caption>
-              跨设备实时云同步服务，能够同步工作区、对话、助手、设置、插件等所有数据。价格为{{ SyncServicePrice }}元/月
+              跨设备实时云同步服务，能够同步工作区、对话、助手、设置、插件等所有数据。<span v-if="SyncServicePrice">价格为{{ SyncServicePrice }}元/月</span>
             </q-item-label>
           </q-item-section>
         </q-item>
@@ -67,6 +67,7 @@
           </q-item-section>
           <q-item-section side>
             <q-btn
+              v-if="BudgetBaseURL"
               unelevated
               label="订阅"
               bg-pri-c
@@ -94,55 +95,58 @@
             />
           </q-item-section>
         </q-item>
-        <q-separator spaced />
-        <q-item-label header>
-          模型服务
-        </q-item-label>
-        <q-item>
-          <q-item-section>
-            <q-item-label
-              caption
-              important:lh="1.5em"
-            >
-              一站式地使用不同服务商的各种先进模型，包括 gpt-4o、claude-3-5-sonnet、o1-mini 等，无需配置。额度随用随充，永久有效。按照官方API原价扣费（按USD/CNY=7计算）。<router-link
-                to="/model-pricing"
-                pri-link
+        <template v-if="LitellmBaseURL">
+          <q-separator spaced />
+          <q-item-label header>
+            模型服务
+          </q-item-label>
+          <q-item>
+            <q-item-section>
+              <q-item-label
+                caption
+                important:lh="1.5em"
               >
-                模型价格
-              </router-link>
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item>
-          <q-item-section>
-            <q-item-label>
-              状态
-            </q-item-label>
-            <q-item-label caption>
-              {{ !perfs.provider && user.isLoggedIn ? '正在使用（作为全局默认服务商）' : '未使用（已配置全局自定义服务商）' }}
-            </q-item-label>
-          </q-item-section>
-        </q-item>
-        <q-item>
-          <q-item-section>
-            <q-item-label>
-              剩余额度
-            </q-item-label>
-            <q-item-label caption>
-              <span v-if="llmBalance">￥{{ llmBalance }}</span>
-              <span v-else>-</span>
-            </q-item-label>
-          </q-item-section>
-          <q-item-section side>
-            <q-btn
-              unelevated
-              bg-pri-c
-              text-on-pri-c
-              label="充值"
-              @click="topupDialog"
-            />
-          </q-item-section>
-        </q-item>
+                一站式地使用不同服务商的各种先进模型，包括 gpt-4o、claude-3-5-sonnet、o1-mini 等，无需配置。额度随用随充，永久有效。按照官方API原价扣费（按USD/CNY=7计算）。<router-link
+                  to="/model-pricing"
+                  pri-link
+                >
+                  模型价格
+                </router-link>
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
+              <q-item-label>
+                状态
+              </q-item-label>
+              <q-item-label caption>
+                {{ !perfs.provider && user.isLoggedIn ? '正在使用（作为全局默认服务商）' : '未使用（已配置全局自定义服务商）' }}
+              </q-item-label>
+            </q-item-section>
+          </q-item>
+          <q-item>
+            <q-item-section>
+              <q-item-label>
+                剩余额度
+              </q-item-label>
+              <q-item-label caption>
+                <span v-if="llmBalance">￥{{ llmBalance }}</span>
+                <span v-else>-</span>
+              </q-item-label>
+            </q-item-section>
+            <q-item-section side>
+              <q-btn
+                v-if="BudgetBaseURL"
+                unelevated
+                bg-pri-c
+                text-on-pri-c
+                label="充值"
+                @click="topupDialog"
+              />
+            </q-item-section>
+          </q-item>
+        </template>
         <template v-if="user.data.orderHistory?.length">
           <q-separator spaced />
           <q-item-label header>
@@ -162,6 +166,7 @@
         <q-item-label
           caption
           p="x-4 y-2"
+          v-if="BudgetBaseURL"
         >
           若订单遇到异常，请联系开发者，Email：<a
             href="mailto:i@krytro.com"
@@ -195,7 +200,7 @@ import { useObservable } from '@vueuse/rxjs'
 import { db } from 'src/utils/db'
 import { useQuasar } from 'quasar'
 import SubscribeDialog from 'src/components/SubscribeDialog.vue'
-import { LitellmBaseURL, SyncServicePrice, UsdToCnyRate } from 'src/utils/config'
+import { BudgetBaseURL, LitellmBaseURL, SyncServicePrice, UsdToCnyRate } from 'src/utils/config'
 import TopupDialog from 'src/components/TopupDialog.vue'
 import { useRouter } from 'vue-router'
 import PayDialog from 'src/components/PayDialog.vue'
@@ -255,6 +260,7 @@ async function logout() {
 
 const llmBalance = ref(null)
 async function refreshLlmBalance() {
+  if (!LitellmBaseURL) return
   const resp = await fetch(`${LitellmBaseURL}/key/info`, {
     method: 'GET',
     headers: {

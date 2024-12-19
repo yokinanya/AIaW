@@ -7,6 +7,7 @@ import { AudioEncoderSupported, extractAudioBlob } from './audio-process'
 import { Parser } from 'expr-eval'
 import { parseDoc } from './doc-parse'
 import { corsFetch } from './cors-fetch'
+import { DocParseBaseURL } from './config'
 
 const timePlugin: Plugin = {
   id: 'aiaw-time',
@@ -623,7 +624,7 @@ const emotionsPlugin: Plugin = {
 const docParsePlugin: Plugin = {
   id: 'aiaw-doc-parse',
   type: 'builtin',
-  available: true,
+  available: !!DocParseBaseURL,
   apis: [],
   fileparsers: [{
     name: 'parse',
