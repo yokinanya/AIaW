@@ -16,7 +16,7 @@ export function useFirstVisit() {
       return
     }
     if (!localData.visited) {
-      const serviceAvailable = !!(DexieDBURL && LitellmBaseURL)
+      const serviceAvailable = DexieDBURL && LitellmBaseURL
       const message = serviceAvailable
         ? 'AIaW 是全功能、轻量级、可拓展的 AI 客户端。<br><br>为了使用 AI 模型，你需要<b>配置服务商（API）</b>或者<b>登录</b>。<br>登录之后，还可以使用跨设备实时云同步功能。'
         : 'AIaW 是全功能、轻量级、可拓展的 AI 客户端。<br><br>为了使用 AI 模型，你需要<b>配置服务商（API）</b>。'
@@ -25,7 +25,7 @@ export function useFirstVisit() {
         message,
         html: true,
         cancel: '配置服务商',
-        persistent: serviceAvailable,
+        persistent: true,
         ok: serviceAvailable ? '登录' : false,
         ...dialogOptions
       }).onCancel(() => {

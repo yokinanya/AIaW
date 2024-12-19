@@ -2,15 +2,18 @@ from fastapi import FastAPI, HTTPException, Response, UploadFile, Form, File
 from pydantic import BaseModel
 import aiohttp
 from typing import Optional, Dict, Any
-import os
 from fastapi.staticfiles import StaticFiles
 from llama_parse import LlamaParse
 
 
 app = FastAPI()
-app.mount("/", StaticFiles(directory="app/static", html=True), name="static")
+app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
-ALLOWED_PREFIXES = os.getenv('ALLOWED_PREFIXES', '').split(',')
+ALLOWED_PREFIXES = [
+    'https://lobehub.search1api.com/api/search',
+    'https://pollinations.ai-chat.top/api/drawing',
+    'https://web-crawler.chat-plugin.lobehub.com/api/v1'
+]
 
 class ProxyRequest(BaseModel):
     method: str

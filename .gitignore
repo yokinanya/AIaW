@@ -45,8 +45,3 @@ yarn-error.log*
 # Vitepress
 /docs/.vitepress/cache
 /docs/.vitepress/dist
-
-# Env
-.env
-.env.dev
-.env.prod
