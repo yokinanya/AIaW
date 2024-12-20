@@ -1,4 +1,5 @@
-from fastapi import FastAPI, HTTPException, Response, UploadFile, Form, File
+from fastapi import FastAPI, HTTPException, Request, Response, UploadFile, Form, File
+from fastapi.responses import FileResponse
 from pydantic import BaseModel
 import aiohttp
 from typing import Optional, Dict, Any
@@ -7,7 +8,6 @@ from llama_parse import LlamaParse
 
 
 app = FastAPI()
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
 
 ALLOWED_PREFIXES = [
     'https://lobehub.search1api.com/api/search',
@@ -80,3 +80,9 @@ async def parse_document(
 
     finally:
         await file.close()
+
+app.mount('/', StaticFiles(directory='static', html=True), name='static')
+
+@app.exception_handler(404)
+async def return_index(request: Request, exc: HTTPException):
+    return FileResponse("static/index.html")
