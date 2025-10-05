@@ -56,7 +56,20 @@ export default configure((ctx) => {
 
       // publicPath: '/',
       // analyze: true,
-      // env: {},
+      env: {
+        DOC_PARSE_BASE_URL: process.env.DOC_PARSE_BASE_URL,
+        CORS_FETCH_BASE_URL: process.env.CORS_FETCH_BASE_URL,
+        SEARXNG_BASE_URL: process.env.SEARXNG_BASE_URL,
+        DEXIE_DB_URL: process.env.DEXIE_DB_URL,
+        LITELLM_BASE_URL: process.env.LITELLM_BASE_URL,
+        BUDGET_BASE_URL: process.env.BUDGET_BASE_URL,
+        SYNC_SERVICE_PRICE: process.env.SYNC_SERVICE_PRICE,
+        SYNC_SERVICE_PRICE_USD: process.env.SYNC_SERVICE_PRICE_USD,
+        USD_TO_CNY_RATE: process.env.USD_TO_CNY_RATE,
+        STRIPE_FEE: process.env.STRIPE_FEE,
+        MAX_MESSAGE_FILE_SIZE_MB: process.env.MAX_MESSAGE_FILE_SIZE_MB,
+        DISABLE_CHECK_UPDATE: process.env.DISABLE_CHECK_UPDATE
+      },
       // rawDefine: {}
       // ignorePublicFolder: true,
       // minify: false,
